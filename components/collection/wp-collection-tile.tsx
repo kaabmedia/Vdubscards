@@ -11,7 +11,10 @@ export type WpCollection = {
 };
 
 export function WpCollectionTile({ item, aspectClass = "aspect-[4/3]" }: { item: WpCollection; aspectClass?: string }) {
-  const href = `/collections/${item.slug}`;
+  const href = {
+    pathname: "/collections/[slug]",
+    query: { slug: item.slug },
+  } as const;
   return (
     <Link href={href} className="group block overflow-hidden rounded-none border bg-card shadow-soft">
       <div className={`relative ${aspectClass} bg-muted`}>

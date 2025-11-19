@@ -5,7 +5,10 @@ import Image from "next/image";
 
 export function CategoryTile({ category }: { category: WCCategory }) {
   const img = category.image?.src || null;
-  const href = `/products?category=${category.id}`;
+  const href = {
+    pathname: "/products",
+    query: { category: category.id },
+  } as const;
 
   return (
     <Link href={href} className="group block overflow-hidden rounded-none border bg-card shadow-soft">

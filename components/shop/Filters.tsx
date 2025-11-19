@@ -52,7 +52,7 @@ export function Filters({ price: _price, attributes }: { price?: { min: number; 
     }
     // Reset pagination when filters change
     qs.delete("page");
-    router.push(`${pathname}?${qs.toString()}`);
+    router.push(`${pathname}?${qs.toString()}` as any);
   }
 
   function togglePriceRange(token: string) {
@@ -83,7 +83,7 @@ export function Filters({ price: _price, attributes }: { price?: { min: number; 
       if (k === "search" || k === "q") return;
       if (k.startsWith("attr_") || k === "min_price" || k === "max_price" || k === "price_ranges") qs.delete(k);
     });
-    router.push(`${pathname}?${qs.toString()}`);
+    router.push(`${pathname}?${qs.toString()}` as any);
   }
 
   const selectedTokens = new Set((sp.get("price_ranges") || "").split(",").filter(Boolean));

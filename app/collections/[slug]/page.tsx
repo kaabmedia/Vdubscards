@@ -141,14 +141,14 @@ export async function generateStaticParams() {
 export const dynamicParams = true;
 export const revalidate = 300;
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const col = await getCollection(params.slug);
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const col = await getCollection(params?.slug as string);
   if (!col) return { title: "Collectie" };
   return { title: `${col.title} — Collectie` };
 }
 
-export default async function CollectionPage({ params, searchParams }: { params: { slug: string }; searchParams: any }) {
-  const col = await getCollection(params.slug);
+export default async function CollectionPage({ params, searchParams }: any) {
+  const col = await getCollection(params?.slug as string);
   if (!col) return notFound();
 
   const page = Math.max(1, Number((searchParams && searchParams.page) || "1"));

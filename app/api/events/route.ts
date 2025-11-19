@@ -38,7 +38,7 @@ export async function GET() {
     let after: string | null | undefined = undefined;
     const all: NonNullable<WPEventsResp["events"]>["nodes"] = [];
     for (let i = 0; i < 10; i++) {
-      const data = await wpGraphQL<WPEventsResp>(EVENTS_QUERY, { first, after });
+      const data: WPEventsResp = await wpGraphQL<WPEventsResp>(EVENTS_QUERY, { first, after });
       const nodes = data?.events?.nodes ?? [];
       all.push(...nodes);
       const pi = data?.events?.pageInfo;

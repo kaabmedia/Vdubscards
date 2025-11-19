@@ -41,7 +41,7 @@ export function WPMenuDesktop({ initial }: { initial?: NavItem[] }) {
     <nav className="hidden md:flex items-center gap-6 text-sm">
       {items.map((it) => (
         <div key={it.id} className="relative group">
-          <Link href={it.path} className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground">
+          <Link href={it.path as any} className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground">
             <span>{it.label}</span>
             {it.children && it.children.length ? (
               <ChevronDown className="h-3.5 w-3.5 opacity-70" />
@@ -64,7 +64,7 @@ export function WPMenuDesktop({ initial }: { initial?: NavItem[] }) {
                         <ChevronDown className="h-4 w-4" />
                       </button>
                     ) : (
-                      <Link href={c.path} className="block rounded-none px-2.5 py-1.5 text-sm text-foreground/80 hover:text-foreground hover:bg-muted whitespace-nowrap">
+                      <Link href={c.path as any} className="block rounded-none px-2.5 py-1.5 text-sm text-foreground/80 hover:text-foreground hover:bg-muted whitespace-nowrap">
                         {c.label}
                       </Link>
                     )}
@@ -73,7 +73,7 @@ export function WPMenuDesktop({ initial }: { initial?: NavItem[] }) {
                         {c.children.map((g) => (
                           <Link
                             key={g.id}
-                            href={g.path}
+                            href={g.path as any}
                             className="block rounded-none px-3 py-1 text-xs text-foreground/70 hover:text-foreground hover:bg-muted whitespace-nowrap transition-colors"
                           >
                             {g.label}
@@ -149,7 +149,7 @@ export function WPMenuMobile({ onNavigate, initial }: { onNavigate?: () => void;
         <div key={it.id}>
           <div className="flex items-center">
             <Link
-              href={it.path}
+              href={it.path as any}
               className="flex-1 text-foreground rounded-none px-3 py-3 text-lg font-semibold"
               onClick={onNavigate}
             >
@@ -184,7 +184,7 @@ export function WPMenuMobile({ onNavigate, initial }: { onNavigate?: () => void;
                     </button>
                   ) : (
                     <Link
-                      href={c.path}
+                      href={c.path as any}
                       className="text-base text-foreground/90 px-3 py-2.5 rounded-none"
                       onClick={onNavigate}
                     >
@@ -196,7 +196,7 @@ export function WPMenuMobile({ onNavigate, initial }: { onNavigate?: () => void;
                       {c.children.map((g) => (
                         <Link
                           key={g.id}
-                          href={g.path}
+                          href={g.path as any}
                           className="text-base text-foreground/80 hover:text-foreground px-3 py-2 rounded-none transition-colors"
                           onClick={onNavigate}
                         >

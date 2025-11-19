@@ -24,7 +24,7 @@ export function Logo({
   const showImage = Boolean(siteConfig.logoSrc) && !imgError;
 
   return (
-    <Link href={href} className={"inline-flex items-center " + (className ?? "")}
+    <Link href={href as any} className={"inline-flex items-center " + (className ?? "")}
       aria-label={siteConfig.brand}>
       {showImage ? (
         <Image

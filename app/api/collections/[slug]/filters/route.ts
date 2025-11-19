@@ -41,9 +41,9 @@ function stripPa(slug: string) {
   return String(slug || "").replace(/^pa_/, "").toLowerCase();
 }
 
-export async function GET(_: Request, { params }: { params: { slug: string } }) {
+export async function GET(_req: Request, context: any) {
   try {
-    const slug = params.slug;
+    const slug = context?.params?.slug as string | undefined;
     if (!slug) return NextResponse.json({ error: "Missing slug" }, { status: 400 });
 
     // 1) Resolve collection title via GraphQL
@@ -178,4 +178,3 @@ export async function GET(_: Request, { params }: { params: { slug: string } }) 
     return NextResponse.json({ error: "Failed to build collection filters", detail: message }, { status: 500 });
   }
 }
-

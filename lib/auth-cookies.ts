@@ -22,9 +22,9 @@ export function clearAuthCookie(res: NextResponse) {
   res.cookies.set({ name: AUTH_COOKIE, value: "", path: "/", httpOnly: true, sameSite: "lax", secure: true, maxAge: 0 });
 }
 
-export function getAuthToken(): string | null {
+export async function getAuthToken(): Promise<string | null> {
   try {
-    const jar = cookies();
+    const jar = await cookies();
     return jar.get(AUTH_COOKIE)?.value || null;
   } catch {
     return null;

@@ -42,7 +42,7 @@ export function CountdownBanner({ end, ctaHref = "/products", className, bg }: {
           <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
             <EmailOptin topic="drop-countdown" />
             <Button asChild className="rounded-none bg-purple-600 text-white hover:bg-purple-700">
-              <Link href={ctaHref}>Shop now</Link>
+              <Link href={ctaHref as any}>Shop now</Link>
             </Button>
           </div>
         </div>

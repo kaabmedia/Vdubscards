@@ -17,7 +17,7 @@ function getSimpleJwtValidateEndpoint() {
 
 export async function GET(req: Request) {
   try {
-    const token = getAuthToken();
+    const token = await getAuthToken();
     const debug = new URL(req.url).searchParams.get("debug");
     if (!token) return NextResponse.json({ authenticated: false, reason: "no_cookie" }, { status: 200 });
 

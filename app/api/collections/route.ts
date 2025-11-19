@@ -39,7 +39,7 @@ export async function GET() {
     let after: string | null | undefined = undefined;
     const all: WPCollectionsResp["collecties"]["nodes"] = [];
     for (let i = 0; i < 10; i++) {
-      const data = await wpGraphQL<WPCollectionsResp>(QUERY, { first, after });
+      const data: WPCollectionsResp = await wpGraphQL<WPCollectionsResp>(QUERY, { first, after });
       const nodes = data?.collecties?.nodes ?? [];
       all.push(...nodes);
       const pi = data?.collecties?.pageInfo;
@@ -61,4 +61,3 @@ export async function GET() {
     return NextResponse.json({ error: "Failed to fetch collections", detail: message }, { status: 500 });
   }
 }
-
