@@ -8,7 +8,6 @@ import { WishlistProvider } from "@/hooks/use-wishlist";
 import { SignupBanner } from "@/components/marketing/SignupBanner";
 import { siteConfig } from "@/config/site";
 import { Main } from "@/components/layout/Main";
-import { Poppins } from "next/font/google";
 import { getPrimaryMenu } from "@/lib/wp-menu";
 
 export const metadata: Metadata = {
@@ -16,13 +15,6 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   metadataBase: new URL(siteConfig.url),
 };
-
-const headingFont = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  variable: "--font-heading",
-  display: "swap",
-});
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Preload WP menu on the server to avoid any client-side flash
@@ -32,7 +24,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   } catch {}
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${headingFont.variable} font-sans`}>
+      <body className="font-sans">
         <QueryProvider>
           <WishlistProvider>
             <Navbar initialMenu={initialMenu} />

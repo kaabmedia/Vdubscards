@@ -174,17 +174,19 @@ export default async function HomePage() {
     getCountdownConfig(),
   ]);
 
+  const countdownEnd = countdown.end ?? undefined;
+
   // Determine if countdown should effectively be shown:
   // status must be true, there must be an end date, and end must be in the future.
   // WordPress stores the datetime in NL-time (Europe/Amsterdam). When parsing on a
   // UTC server we end up one hour late, so we subtract that offset here.
-  const rawEndMs = countdown.end ? new Date(countdown.end).getTime() : 0;
+  const rawEndMs = countdownEnd ? new Date(countdownEnd).getTime() : 0;
   const countdownEndMs = rawEndMs ? rawEndMs - 60 * 60 * 1000 : 0;
   const nowMs = Date.now();
 
   const countdownActive = Boolean(
     countdown.status &&
-    countdown.end &&
+    countdownEnd &&
     Number.isFinite(countdownEndMs) &&
     countdownEndMs > nowMs
   );
@@ -192,8 +194,8 @@ export default async function HomePage() {
   return (
     <div>
       {/* Countdown banner (60vh), shown only when enabled, directly under the header */}
-      {countdownActive ? (
-        <CountdownBanner end={countdown.end} ctaHref="/products" bg={countdown.background || undefined} />
+      {countdownActive && countdownEnd ? (
+        <CountdownBanner end={countdownEnd} ctaHref="/products" bg={countdown.background || undefined} />
       ) : null}
 
       {/* Full-bleed hero image (60vh). Content remains within layout container. */}
