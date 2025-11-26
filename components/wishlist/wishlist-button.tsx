@@ -28,10 +28,16 @@ export function WishlistButton({ id, className }: { id: number; className?: stri
       }}
       className={
         className ||
-        "p-1.5 md:p-2 bg-white rounded-full text-foreground/70 hover:text-foreground shadow-soft"
+        "p-1.5 md:p-2 bg-white rounded-full text-foreground/70 hover:text-purple-500 shadow-soft"
       }
     >
-      <Heart className={`h-5 w-5 ${active ? "fill-current text-red-500" : ""} ${pop ? "anim-wish-pop" : ""}`} />
+      <Heart
+        className={
+          "h-5 w-5 " +
+          (active ? "fill-current text-purple-600" : "") +
+          (pop ? " anim-wish-pop" : "")
+        }
+      />
     </button>
   );
 }

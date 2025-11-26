@@ -34,7 +34,7 @@ export function SignupBanner() {
   }
 
   return (
-    <section className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen max-w-[100vw] bg-[#fffbeb] text-black">
+    <section className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen max-w-[100vw] bg-primary text-black">
       <div className="container py-8 md:py-10">
         <div className="grid gap-6 md:grid-cols-3 md:items-center">
           <div className="md:col-span-2">
@@ -49,7 +49,10 @@ export function SignupBanner() {
               onChange={(e) => setEmail(e.target.value)}
               className="!rounded-none bg-white text-black w-full md:w-72"
             />
-            <Button disabled={loading} className="rounded-none bg-black text-white hover:bg-black/90">
+            <Button
+              disabled={loading}
+              className="rounded-none bg-black text-white hover:bg-black/90"
+            >
               {loading ? "Versturen…" : "Inschrijven"}
             </Button>
           </form>

@@ -1,7 +1,6 @@
 // components/marketing/CountdownBanner.tsx
 "use client";
 import * as React from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -10,7 +9,11 @@ function pad(n: number) {
 }
 
 export function CountdownBanner({ end, ctaHref = "/products", className, bg }: { end: string | Date; ctaHref?: string; className?: string; bg?: string | null }) {
-  const endMs = typeof end === "string" ? new Date(end).getTime() : new Date(end).getTime();
+  // WordPress stores the countdown end in NL-time (Europe/Amsterdam).
+  // Parsing on some environments yields a value that's 1 hour late,
+  // so we subtract that offset so the client countdown matches WP.
+  const baseEndMs = typeof end === "string" ? new Date(end).getTime() : new Date(end).getTime();
+  const endMs = baseEndMs ? baseEndMs - 60 * 60 * 1000 : 0;
   const [now, setNow] = React.useState<number>(() => Date.now());
 
   React.useEffect(() => {
@@ -41,28 +44,41 @@ export function CountdownBanner({ end, ctaHref = "/products", className, bg }: {
           <p className={`text-sm md:text-base text-white/90 max-w-prose`}>Get notified when the new cards go live and be the first to grab them.</p>
           <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
             <EmailOptin topic="drop-countdown" />
-            <Button asChild className="rounded-none bg-purple-600 text-white hover:bg-purple-700">
-              <Link href={ctaHref as any}>Shop now</Link>
-            </Button>
           </div>
         </div>
         <div className="flex w-full md:w-auto justify-center md:justify-end">
           <div className="grid w-full md:w-auto grid-cols-4 gap-2 md:gap-4">
-            <div className="flex flex-col items-center bg-primary px-4 py-3 min-w-[72px]">
-              <div className="text-3xl font-bold leading-none text-black">{pad(days)}</div>
-              <div className="text-xs uppercase tracking-wide text-black">Days</div>
+            <div className="flex flex-col items-center min-w-[72px]">
+              <div className="text-4xl md:text-5xl font-bold leading-none text-white">
+                {pad(days)}
+              </div>
+              <div className="mt-2 text-xs font-semibold uppercase tracking-wide text-white">
+                Days
+              </div>
             </div>
-            <div className="flex flex-col items-center bg-primary px-4 py-3 min-w-[72px]">
-              <div className="text-3xl font-bold leading-none text-black">{pad(hours)}</div>
-              <div className="text-xs uppercase tracking-wide text-black">Hours</div>
+            <div className="flex flex-col items-center min-w-[72px]">
+              <div className="text-4xl md:text-5xl font-bold leading-none text-white">
+                {pad(hours)}
+              </div>
+              <div className="mt-2 text-xs font-semibold uppercase tracking-wide text-white">
+                Hours
+              </div>
             </div>
-            <div className="flex flex-col items-center bg-primary px-4 py-3 min-w-[72px]">
-              <div className="text-3xl font-bold leading-none text-black">{pad(minutes)}</div>
-              <div className="text-xs uppercase tracking-wide text-black">Minutes</div>
+            <div className="flex flex-col items-center min-w-[72px]">
+              <div className="text-4xl md:text-5xl font-bold leading-none text-white">
+                {pad(minutes)}
+              </div>
+              <div className="mt-2 text-xs font-semibold uppercase tracking-wide text-white">
+                Minutes
+              </div>
             </div>
-            <div className="flex flex-col items-center bg-primary px-4 py-3 min-w-[72px]">
-              <div className="text-3xl font-bold leading-none text-black">{pad(seconds)}</div>
-              <div className="text-xs uppercase tracking-wide text-black">Seconds</div>
+            <div className="flex flex-col items-center min-w-[72px]">
+              <div className="text-4xl md:text-5xl font-bold leading-none text-white">
+                {pad(seconds)}
+              </div>
+              <div className="mt-2 text-xs font-semibold uppercase tracking-wide text-white">
+                Seconds
+              </div>
             </div>
           </div>
         </div>
@@ -114,7 +130,7 @@ function EmailOptin({ topic }: { topic?: string }) {
       <Button
         type="submit"
         disabled={loading}
-        className="w-full sm:w-auto rounded-none bg-yellow-400 text-black hover:bg-yellow-500"
+        className="w-full sm:w-auto rounded-none bg-purple-600 text-white hover:bg-purple-700"
       >
         {loading ? "Sending…" : "Notify me"}
       </Button>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import * as React from "react";
-import { ChevronDown, ChevronRight, Heart, User } from "lucide-react";
+import { ChevronDown, ChevronRight, Heart } from "lucide-react";
 import { useWishlist } from "@/hooks/use-wishlist";
 
 type NavItem = {
@@ -38,13 +38,16 @@ export function WPMenuDesktop({ initial }: { initial?: NavItem[] }) {
   };
 
   return (
-    <nav className="hidden md:flex items-center gap-6 text-sm">
+    <nav className="hidden md:flex items-center gap-6 text-base">
       {items.map((it) => (
         <div key={it.id} className="relative group">
-          <Link href={it.path as any} className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground">
+          <Link
+            href={it.path as any}
+            className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground font-heading font-semibold"
+          >
             <span>{it.label}</span>
             {it.children && it.children.length ? (
-              <ChevronDown className="h-3.5 w-3.5 opacity-70" />
+              <ChevronDown strokeWidth={3} className="h-3.5 w-3.5 opacity-70 text-purple-600" />
             ) : null}
           </Link>
           {it.children && it.children.length ? (
@@ -57,14 +60,21 @@ export function WPMenuDesktop({ initial }: { initial?: NavItem[] }) {
                         type="button"
                         aria-label="Toon submenu"
                         aria-expanded={open.has(c.id)}
-                        className="inline-flex items-center gap-10 rounded-none px-2.5 py-1.5 text-sm text-foreground/80 hover:text-foreground hover:bg-muted whitespace-nowrap"
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(c.id); }}
+                        className="inline-flex items-center gap-10 rounded-none px-2.5 py-1.5 text-sm font-normal text-foreground/80 hover:text-foreground hover:bg-muted whitespace-nowrap"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          toggle(c.id);
+                        }}
                       >
                         <span>{c.label}</span>
-                        <ChevronDown className="h-4 w-4" />
+                        <ChevronDown strokeWidth={3} className="h-4 w-4 text-purple-600" />
                       </button>
                     ) : (
-                      <Link href={c.path as any} className="block rounded-none px-2.5 py-1.5 text-sm text-foreground/80 hover:text-foreground hover:bg-muted whitespace-nowrap">
+                      <Link
+                        href={c.path as any}
+                        className="block rounded-none px-2.5 py-1.5 text-sm font-normal text-foreground/80 hover:text-foreground hover:bg-muted whitespace-nowrap"
+                      >
                         {c.label}
                       </Link>
                     )}
@@ -74,7 +84,7 @@ export function WPMenuDesktop({ initial }: { initial?: NavItem[] }) {
                           <Link
                             key={g.id}
                             href={g.path as any}
-                            className="block rounded-none px-3 py-1 text-xs text-foreground/70 hover:text-foreground hover:bg-muted whitespace-nowrap transition-colors"
+                            className="block rounded-none px-3 py-2 text-xs font-normal text-foreground/70 hover:text-foreground hover:bg-muted whitespace-nowrap transition-colors"
                           >
                             {g.label}
                           </Link>
@@ -113,8 +123,8 @@ export function WPMenuMobile({ onNavigate, initial }: { onNavigate?: () => void;
 
   return (
     <div className="flex flex-col space-y-2">
-      {/* Row: Favorites + Account side by side with clearer separation */}
-      <div className="grid grid-cols-2 overflow-hidden rounded-none border border-black/10 divide-x divide-black/10 bg-white/90 place-items-center">
+      {/* Row: Favorites entry */}
+      <div className="grid grid-cols-1 overflow-hidden rounded-none border border-black/10 bg-white/90 place-items-center">
         {/* Favorites entry */}
         <div className="flex items-center">
           <Link
@@ -133,24 +143,13 @@ export function WPMenuMobile({ onNavigate, initial }: { onNavigate?: () => void;
             </span>
           </Link>
         </div>
-        {/* Account entry */}
-        <div className="flex items-center">
-          <Link
-            href="/account"
-            className="flex-1 text-foreground rounded-none px-3 py-3 text-lg font-semibold inline-flex items-center justify-center gap-2 text-center"
-            onClick={onNavigate}
-          >
-            <User className="h-5 w-5" />
-            <span>Account</span>
-          </Link>
-        </div>
       </div>
       {items.map((it) => (
         <div key={it.id}>
           <div className="flex items-center">
             <Link
               href={it.path as any}
-              className="flex-1 text-foreground rounded-none px-3 py-3 text-lg font-semibold"
+              className="flex-1 text-foreground rounded-none px-3 py-3 text-lg font-semibold font-heading"
               onClick={onNavigate}
             >
               {it.label}
@@ -163,7 +162,7 @@ export function WPMenuMobile({ onNavigate, initial }: { onNavigate?: () => void;
                 className="p-2 text-foreground/70 hover:text-foreground"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(it.id); }}
               >
-                <ChevronDown className="h-5 w-5" />
+                <ChevronDown strokeWidth={3} className="h-5 w-5 text-purple-600" />
               </button>
             ) : null}
           </div>
@@ -180,7 +179,7 @@ export function WPMenuMobile({ onNavigate, initial }: { onNavigate?: () => void;
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(c.id); }}
                     >
                       <span>{c.label}</span>
-                      <ChevronDown className="h-5 w-5" />
+                      <ChevronDown strokeWidth={3} className="h-5 w-5 text-purple-600" />
                     </button>
                   ) : (
                     <Link
@@ -197,7 +196,7 @@ export function WPMenuMobile({ onNavigate, initial }: { onNavigate?: () => void;
                         <Link
                           key={g.id}
                           href={g.path as any}
-                          className="text-base text-foreground/80 hover:text-foreground px-3 py-2 rounded-none transition-colors"
+                          className="text-sm font-normal text-foreground/70 hover:text-foreground px-3 py-2.5 rounded-none transition-colors"
                           onClick={onNavigate}
                         >
                           {g.label}

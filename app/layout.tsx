@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 const headingFont = Poppins({
   subsets: ["latin"],
-  weight: ["600", "700"],
+  weight: ["400", "600", "700"],
   variable: "--font-heading",
   display: "swap",
 });

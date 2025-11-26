@@ -37,7 +37,7 @@ export function ProductCard({ product }: { product: WCProduct }) {
           ) : null}
           {!outOfStock && product.on_sale ? (
             <div className="absolute left-2 top-2 z-20">
-              <Badge className="bg-primary text-black border-transparent">Sale</Badge>
+              <Badge className="bg-purple-600 text-white border-transparent">Sale</Badge>
             </div>
           ) : null}
           {image ? (

@@ -161,12 +161,108 @@
 /* Hero background: layered subtle gradients for a premium look */
 .hero-bg {
   background:
-    radial-gradient(60rem 60rem at 10% 10%, rgba(255, 214, 130, 0.18), transparent 40%),
-    radial-gradient(40rem 40rem at 90% 0%, rgba(255, 214, 130, 0.12), transparent 40%),
-    radial-gradient(30rem 30rem at 0% 90%, rgba(255, 214, 130, 0.10), transparent 40%),
-    linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0));
+    radial-gradient(60rem 60rem at 10% 10%, rgba(255, 214, 130, 0.35), transparent 40%),
+    radial-gradient(40rem 40rem at 90% 0%, rgba(255, 214, 130, 0.22), transparent 40%),
+    radial-gradient(30rem 30rem at 0% 90%, rgba(255, 214, 130, 0.18), transparent 40%),
+    linear-gradient(180deg, rgba(255, 247, 209, 0.9), rgba(255, 247, 209, 1));
   filter: saturate(105%);
 }
+
+/* Floating trading-card shapes in hero background */
+.hero-cards {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.hero-card {
+  position: absolute;
+  width: 88px;
+  height: 128px;
+  border-radius: 0;
+  /* Purple → yellow trading-card gradient */
+  background: linear-gradient(135deg, #7c3aed, var(--primary));
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+  opacity: 0.14;
+  transform-origin: center;
+}
+
+.hero-card-1 {
+  top: 14%;
+  left: 12%;
+  animation: hero-card-float-1 26s linear infinite;
+}
+
+.hero-card-2 {
+  top: 24%;
+  right: 8%;
+  animation: hero-card-float-2 32s linear infinite;
+}
+
+.hero-card-3 {
+  bottom: 10%;
+  left: 36%;
+  animation: hero-card-float-3 30s linear infinite;
+}
+
+.hero-card-4 {
+  top: 8%;
+  left: 50%;
+  animation: hero-card-float-2 34s linear infinite;
+}
+
+.hero-card-5 {
+  bottom: 16%;
+  right: 14%;
+  animation: hero-card-float-1 28s linear infinite;
+}
+
+.hero-card-6 {
+  bottom: 6%;
+  left: 12%;
+  animation: hero-card-float-3 36s linear infinite;
+}
+
+@keyframes hero-card-float-1 {
+  0% { transform: translate3d(-40px, 40px, 0) rotate(-16deg); }
+  50% { transform: translate3d(20px, -10px, 0) rotate(-8deg); }
+  100% { transform: translate3d(-40px, 40px, 0) rotate(-16deg); }
+}
+
+@keyframes hero-card-float-2 {
+  0% { transform: translate3d(40px, 50px, 0) rotate(18deg); }
+  50% { transform: translate3d(-10px, -20px, 0) rotate(10deg); }
+  100% { transform: translate3d(40px, 50px, 0) rotate(18deg); }
+}
+
+@keyframes hero-card-float-3 {
+  0% { transform: translate3d(-30px, 20px, 0) rotate(6deg); }
+  50% { transform: translate3d(15px, -25px, 0) rotate(-2deg); }
+  100% { transform: translate3d(-30px, 20px, 0) rotate(6deg); }
+}
+
+/* Subtle eagle rise on hero load */
+.hero-eagle {
+  animation: hero-eagle-rise 900ms cubic-bezier(0.19, 1, 0.22, 1) 250ms both;
+}
+
+@keyframes hero-eagle-rise {
+  0% {
+    transform: translateY(32px);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* (Countdown digit animation removed; using static digits again) */
+
 
 /* Simple marquee for announcement bar */
 .marquee-inner {

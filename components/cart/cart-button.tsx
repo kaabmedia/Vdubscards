@@ -10,10 +10,14 @@ export function CartButton({ plain = false }: { plain?: boolean }) {
 
   if (plain) {
     return (
-      <button type="button" aria-label="Cart" className="relative p-2 text-foreground/70 hover:text-foreground">
+      <button
+        type="button"
+        aria-label="Cart"
+        className="relative p-2 text-foreground/70 hover:text-purple-600"
+      >
         <ShoppingBag className="h-5 w-5" />
         {count > 0 ? (
-          <span className="absolute -right-0 -top-0 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-black px-1 text-[10px] font-semibold text-white">
+          <span className="absolute -right-0 -top-0 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-purple-600 px-1 text-[10px] font-semibold text-white">
             {count}
           </span>
         ) : null}
@@ -26,7 +30,7 @@ export function CartButton({ plain = false }: { plain?: boolean }) {
       <div className="relative">
         <ShoppingBag className="h-5 w-5" />
         {count > 0 ? (
-          <span className="absolute -right-0 -top-0 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-black px-1 text-[10px] font-semibold text-white">
+          <span className="absolute -right-0 -top-0 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-purple-600 px-1 text-[10px] font-semibold text-white">
             {count}
           </span>
         ) : null}

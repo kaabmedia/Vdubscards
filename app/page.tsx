@@ -11,15 +11,17 @@ import { WpCollection, WpCollectionTile } from "@/components/collection/wp-colle
 import { Button } from "@/components/ui/button";
 import { wpGraphQL } from "@/lib/wp-graphql";
 import { CountdownBanner } from "@/components/marketing/CountdownBanner";
+import { HeroCards } from "@/components/marketing/HeroCards";
 
 async function getProducts(): Promise<WCProduct[]> {
   try {
     // Ask the API (no-cache) for up to 4 unique random products.
-    // If the API ever returns duplicates, retry a couple of times so
-    // we still try to fill all 4 slots with unique cards.
+    // If the API ever returns duplicates, retry multiple times and
+    // fall back to non-unique random products so we always end up
+    // with 4 cards rendered.
     const base = await getBaseUrl();
     const maxCards = 4;
-    const maxAttempts = 3;
+    const maxAttempts = 8;
     const seen = new Map<number, WCProduct>();
 
     for (let attempt = 0; attempt < maxAttempts && seen.size < maxCards; attempt++) {
@@ -37,7 +39,32 @@ async function getProducts(): Promise<WCProduct[]> {
       }
     }
 
-    return Array.from(seen.values()).slice(0, maxCards);
+    let out = Array.from(seen.values());
+
+    // If we still have fewer than 4 unique products, do one more
+    // non-unique random fetch and use it to fill the remaining slots.
+    if (out.length < maxCards) {
+      const fallbackRes = await fetch(`${base}/api/products/random?per_page=${maxCards}`, {
+        cache: "no-store",
+        next: { revalidate: 0 },
+      });
+      if (fallbackRes.ok) {
+        const extra = (await fallbackRes.json()) as WCProduct[];
+        for (const p of extra) {
+          if (!seen.has(p.id)) {
+            seen.set(p.id, p);
+            out.push(p);
+            if (out.length >= maxCards) break;
+          }
+        }
+        // If we still don't have enough, allow duplicates from the fallback batch
+        if (out.length < maxCards && extra.length) {
+          out = out.concat(extra).slice(0, maxCards);
+        }
+      }
+    }
+
+    return out.slice(0, maxCards);
   } catch {
     return [];
   }
@@ -147,46 +174,79 @@ export default async function HomePage() {
     getCountdownConfig(),
   ]);
 
+  // Determine if countdown should effectively be shown:
+  // status must be true, there must be an end date, and end must be in the future.
+  // WordPress stores the datetime in NL-time (Europe/Amsterdam). When parsing on a
+  // UTC server we end up one hour late, so we subtract that offset here.
+  const rawEndMs = countdown.end ? new Date(countdown.end).getTime() : 0;
+  const countdownEndMs = rawEndMs ? rawEndMs - 60 * 60 * 1000 : 0;
+  const nowMs = Date.now();
+
+  const countdownActive = Boolean(
+    countdown.status &&
+    countdown.end &&
+    Number.isFinite(countdownEndMs) &&
+    countdownEndMs > nowMs
+  );
+
   return (
     <div>
       {/* Countdown banner (60vh), shown only when enabled, directly under the header */}
-      {countdown.status && countdown.end ? (
+      {countdownActive ? (
         <CountdownBanner end={countdown.end} ctaHref="/products" bg={countdown.background || undefined} />
       ) : null}
 
-      {/* Full-bleed hero image (70vh). Content remains within layout container. */}
+      {/* Full-bleed hero image (60vh). Content remains within layout container. */}
+      {!countdownActive && (
       <section
-        className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen max-w-[100vw] h-[70svh] overflow-hidden"
+        className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen max-w-[100vw] h-[60vh] overflow-hidden"
         aria-label="Hero"
       >
-        {/* Gradient background (no image) */}
-        <div className="absolute inset-0 hero-bg" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/0 via-background/20 to-background" />
-        <div className="relative h-full">
-          <div className="container h-full flex items-center">
-            <div className="max-w-2xl">
-              <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">
-                Premium Cards, Comics & Collectibles
-              </h1>
-              <p className="mt-3 text-muted-foreground">
-                V-dubscards is a family-owned shop for serious collectors and new fans alike.
-              </p>
-              <div className="mt-6">
-                <Link
-                  href="/products"
-                  className="inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground shadow-soft hover:opacity-95"
-                >
-                  Shop Now
-                </Link>
+          {/* Gradient background (no image) */}
+          <div className="absolute inset-0 hero-bg -z-30" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/0 via-background/20 to-background -z-20" />
+
+        {/* Animated cards between background and content */}
+        <HeroCards />
+
+          {/* Content (always on top of cards) */}
+          <div className="relative z-10 h-full">
+            <div className="container h-full flex items-center justify-center px-4 pt-4 md:pt-6">
+              <div className="max-w-xl text-center mx-auto bg-background/80 rounded-3xl px-6 py-6 md:px-8 md:py-8 md:-mt-[150px]">
+                <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">
+                  Premium Cards, Comics & Collectibles
+                </h1>
+                <p className="mt-3 text-muted-foreground">
+                  V-dubscards is a family-owned shop for serious collectors and new fans alike.
+                </p>
+                <div className="mt-6">
+                  <Link
+                    href="/products"
+                    className="inline-flex h-11 items-center rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground shadow-soft hover:opacity-95"
+                  >
+                    Shop Now
+                  </Link>
+                </div>
+              </div>
+            </div>
+            {/* Mascot image aligned to bottom center inside layout */}
+            <div className="pointer-events-none hidden sm:block absolute inset-x-0 bottom-0 md:-bottom-[20px] z-20 hero-eagle">
+              <div className="container flex justify-center px-4 pb-2">
+                <Image
+                  src="/mascot-v-eagle.png"
+                  alt="V-dubscards mascot"
+                  width={220}
+                  height={220}
+                />
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <SectionBand bgClass="bg-white" className="py-6 md:py-12">
         <div className="flex items-center gap-3">
-          <h2>Random Picks</h2>
+          <h2>Recommendations</h2>
         </div>
         {products.length > 0 ? (
           <>
@@ -210,8 +270,31 @@ export default async function HomePage() {
         )}
       </SectionBand>
 
-      {/* Events section under Random Picks */}
-      <SectionBand bgClass="bg-muted/30" className="py-6 md:py-12">
+      {/* Collections grid from WP GraphQL */}
+      <SectionBand bgClass="bg-primary/5">
+        <div className="flex items-center gap-3">
+          <h2>Popular Collections</h2>
+        </div>
+        {collections.length > 0 ? (
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+              {collections.slice(0, 5).map((c) => (
+                <WpCollectionTile key={c.id} item={c} aspectClass="aspect-[4/3.2]" />
+              ))}
+            </div>
+            <div className="mt-4">
+              <Button asChild className="gap-1 rounded-full">
+                <Link href="/collections">View all collections <ArrowRight className="h-4 w-4" /></Link>
+              </Button>
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-muted-foreground">No collections found.</p>
+        )}
+      </SectionBand>
+
+      {/* Events section under Popular Collections */}
+      <SectionBand bgClass="bg-white" className="py-6 md:py-12">
         <div className="flex items-center gap-3">
           <h2>Come say hi at an event!</h2>
         </div>
@@ -301,31 +384,8 @@ export default async function HomePage() {
         </div>
       </SectionBand>
 
-      {/* Collections grid from WP GraphQL */}
-      <SectionBand bgClass="bg-muted/30">
-        <div className="flex items-center gap-3">
-          <h2>Popular Collections</h2>
-        </div>
-        {collections.length > 0 ? (
-          <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-              {collections.slice(0, 5).map((c) => (
-                <WpCollectionTile key={c.id} item={c} aspectClass="aspect-[4/3.2]" />
-              ))}
-            </div>
-            <div className="mt-4">
-              <Button asChild className="gap-1 rounded-full">
-                <Link href="/collections">View all collections <ArrowRight className="h-4 w-4" /></Link>
-              </Button>
-            </div>
-          </>
-        ) : (
-          <p className="text-sm text-muted-foreground">No collections found.</p>
-        )}
-      </SectionBand>
-
       {/* New Arrivals section */}
-      <SectionBand bgClass="bg-white">
+      <SectionBand bgClass="bg-muted/20">
         <div className="flex items-center gap-3">
           <h2>New arrivals</h2>
         </div>
@@ -350,7 +410,7 @@ export default async function HomePage() {
       </SectionBand>
 
       {/* On Sale section */}
-      <SectionBand bgClass="bg-transparent">
+      <SectionBand bgClass="bg-white">
         <div className="flex items-center gap-3">
           <h2>On sale</h2>
         </div>

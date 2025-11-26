@@ -8,7 +8,7 @@ export function Footer() {
   // Always show payment badges in the bottom-right
 
   return (
-    <footer className="mt-0 bg-primary text-black">
+    <footer className="mt-0 bg-[#FFF7D1] text-black">
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 text-sm">
           {/* Brand */}
@@ -32,8 +32,8 @@ export function Footer() {
             <div className="text-base font-bold font-heading">Shop</div>
             <ul className="mt-3 space-y-2">
               <li><Link href="/products" className="hover:opacity-80">All Products</Link></li>
+              <li><Link href="/collections" className="hover:opacity-80">Collections</Link></li>
               <li><Link href="/products?on_sale=1" className="hover:opacity-80">On Sale</Link></li>
-              <li><Link href="/categories" className="hover:opacity-80">Categories</Link></li>
             </ul>
           </div>
 
@@ -43,18 +43,18 @@ export function Footer() {
             <ul className="mt-3 space-y-2">
               <li><Link href="/shipping" className="hover:opacity-80">Shipping & Delivery</Link></li>
               <li><Link href="/returns" className="hover:opacity-80">Returns</Link></li>
-              <li><Link href="#" className="hover:opacity-80">Order Status</Link></li>
-              <li><Link href="/contact" className="hover:opacity-80">Contact</Link></li>
+              <li><Link href="/faq" className="hover:opacity-80">FAQ</Link></li>
+              <li><Link href="/contact" className="hover:opacity-80">Contact us</Link></li>
             </ul>
           </div>
 
-          {/* Info */}
+          {/* Company */}
           <div className="md:col-span-3">
-            <div className="text-base font-bold font-heading">Info</div>
+            <div className="text-base font-bold font-heading">Company</div>
             <ul className="mt-3 space-y-2">
               <li><Link href="/about" className="hover:opacity-80">About</Link></li>
               <li><Link href="/privacy" className="hover:opacity-80">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="hover:opacity-80">Terms & Conditions</Link></li>
+              <li><Link href="/terms" className="hover:opacity-80">Terms &amp; Conditions</Link></li>
             </ul>
             <div className="mt-4 text-sm space-y-2">
               <div className="flex items-center gap-2">

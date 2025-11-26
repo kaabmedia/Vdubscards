@@ -1,13 +1,12 @@
 // components/layout/Navbar.tsx
 "use client";
 import Link from "next/link";
-import { Heart, Menu, ShoppingBag, User, X, Search, Truck, ShieldCheck, RefreshCcw, Gift, Package } from "lucide-react";
+import { Menu, X, Search, Truck, ShieldCheck, RefreshCcw, Gift, Package } from "lucide-react";
 import * as React from "react";
 import { CartButton } from "@/components/cart/cart-button";
 import { SearchForm } from "@/components/forms/search-form";
 import { CartSheet } from "@/components/cart/cart-sheet";
 import { Logo } from "@/components/layout/Logo";
-import { AccountControl } from "@/components/auth/account-control";
 import { WishlistControl } from "@/components/wishlist/wishlist-control";
 import { WPMenuDesktop, WPMenuMobile } from "@/components/layout/WPMenu";
 
@@ -69,11 +68,13 @@ export function Navbar({ initialMenu }: { initialMenu?: NavItem[] }) {
     }
   }, [mobileOpen, searchOpen]);
 
-  // Hide USP bar on scroll
+  // Hide USP bar after scrolling down a bit so it doesn't flicker
+  // when the user makes very small scroll movements at the top.
   React.useEffect(() => {
     const onScroll = () => {
       try {
-        setUspVisible(window.scrollY < 10);
+        const hideThreshold = 200; // px
+        setUspVisible(window.scrollY < hideThreshold);
       } catch {}
     };
     onScroll();
@@ -131,7 +132,6 @@ export function Navbar({ initialMenu }: { initialMenu?: NavItem[] }) {
             <div className="hidden md:flex mr-2 w-56">
               <SearchForm hideOnMobile={true} variant="bar" className="w-full" inputClassName="h-9 bg-white" />
             </div>
-            <AccountControl />
             <div className="hidden md:inline-flex">
               <WishlistControl />
             </div>
