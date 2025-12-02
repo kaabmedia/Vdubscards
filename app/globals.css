@@ -132,6 +132,20 @@
   h2 {
     @apply text-2xl md:text-3xl font-semibold tracking-tight text-foreground;
   }
+  button:not(:disabled),
+  [role="button"] {
+    transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease, background-color 180ms ease;
+  }
+  button:not(:disabled):hover,
+  [role="button"]:not(:disabled):hover {
+    transform: translateY(-1px);
+    filter: brightness(0.98);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  }
+  button:not(:disabled):active,
+  [role="button"]:not(:disabled):active {
+    transform: translateY(0);
+  }
 }
 
 .shadow-soft {
@@ -161,11 +175,13 @@
 /* Hero background: layered subtle gradients for a premium look */
 .hero-bg {
   background:
-    radial-gradient(60rem 60rem at 10% 10%, rgba(255, 214, 130, 0.35), transparent 40%),
-    radial-gradient(40rem 40rem at 90% 0%, rgba(255, 214, 130, 0.22), transparent 40%),
-    radial-gradient(30rem 30rem at 0% 90%, rgba(255, 214, 130, 0.18), transparent 40%),
-    linear-gradient(180deg, rgba(255, 247, 209, 0.9), rgba(255, 247, 209, 1));
-  filter: saturate(105%);
+    radial-gradient(80rem 80rem at 12% 12%, rgba(255, 214, 130, 0.58), transparent 44%),
+    radial-gradient(60rem 60rem at 88% 10%, rgba(124, 58, 237, 0.38), transparent 46%),
+    radial-gradient(50rem 50rem at 16% 78%, rgba(255, 214, 130, 0.36), transparent 48%),
+    radial-gradient(38rem 38rem at 78% 74%, rgba(124, 58, 237, 0.3), transparent 52%),
+    conic-gradient(from 200deg at 50% 40%, rgba(255, 214, 130, 0.26), rgba(124, 58, 237, 0.18), rgba(255, 214, 130, 0.32), rgba(124, 58, 237, 0.14), rgba(255, 214, 130, 0.26)),
+    linear-gradient(180deg, rgba(255, 247, 209, 0.96), rgba(255, 238, 170, 0.92));
+  filter: saturate(115%);
 }
 
 /* Floating trading-card shapes in hero background */
@@ -174,12 +190,21 @@
   inset: 0;
   overflow: hidden;
 }
+.hero-cards {
+  display: none;
+}
+@media (min-width: 640px) {
+  .hero-cards {
+    display: block;
+  }
+}
 
 .hero-card {
   position: absolute;
-  width: 88px;
-  height: 128px;
+  width: 176px;
+  height: 256px;
   border-radius: 0;
+  overflow: hidden;
   /* Purple → yellow trading-card gradient */
   background: linear-gradient(135deg, #7c3aed, var(--primary));
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
@@ -187,39 +212,48 @@
   transform-origin: center;
 }
 
+.hero-cards[data-has-images="true"] .hero-card {
+  opacity: 1;
+  background: #fef9e7;
+}
+
+.hero-cards[data-has-images="true"] .hero-card img {
+  object-fit: cover;
+}
+
 .hero-card-1 {
-  top: 14%;
-  left: 12%;
+  top: 12%;
+  left: 14%;
   animation: hero-card-float-1 26s linear infinite;
 }
 
 .hero-card-2 {
-  top: 24%;
-  right: 8%;
+  top: 8%;
+  right: 12%;
   animation: hero-card-float-2 32s linear infinite;
 }
 
 .hero-card-3 {
-  bottom: 10%;
-  left: 36%;
+  top: 8%;
+  right: 18%;
   animation: hero-card-float-3 30s linear infinite;
 }
 
 .hero-card-4 {
-  top: 8%;
-  left: 50%;
+  bottom: 12%;
+  left: 16%;
   animation: hero-card-float-2 34s linear infinite;
 }
 
 .hero-card-5 {
-  bottom: 16%;
-  right: 14%;
+  bottom: 10%;
+  right: 18%;
   animation: hero-card-float-1 28s linear infinite;
 }
 
 .hero-card-6 {
   bottom: 6%;
-  left: 12%;
+  left: 18%;
   animation: hero-card-float-3 36s linear infinite;
 }
 

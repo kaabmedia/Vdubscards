@@ -67,7 +67,7 @@ export function ProductCard({ product }: { product: WCProduct }) {
           ) : null}
         </div>
       </Link>
-      <CardHeader>
+      <CardHeader className="p-4 pb-3">
         <CardTitle className="flex items-start justify-between gap-2 text-base">
           <Link href={href} className="line-clamp-1 hover:underline">
             {product.name}
@@ -75,7 +75,7 @@ export function ProductCard({ product }: { product: WCProduct }) {
           {/* Sale badge moved to image top-left */}
         </CardTitle>
       </CardHeader>
-      <CardContent className="pb-[19px]">
+      <CardContent className="px-4 pb-5 pt-0">
         <div className="space-y-3">
           <div className="text-base md:text-lg font-semibold leading-none">
             {price ? (

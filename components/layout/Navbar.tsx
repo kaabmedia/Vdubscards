@@ -179,7 +179,7 @@ export function Navbar({ initialMenu }: { initialMenu?: NavItem[] }) {
       <div
         id="mobile-menu-panel"
         className={`fixed left-0 right-0 bottom-0 z-[60] md:hidden transform transition-transform duration-300 ease-out ${mobileOpen ? "translate-y-0 opacity-100 pointer-events-auto" : "-translate-y-4 opacity-0 pointer-events-none"}`}
-        style={{ top: headerHeight, background: "var(--primary)" }}
+        style={{ top: "116px", background: "#ffffff" }}
         aria-hidden={!mobileOpen}
       >
         {/* Removed in-panel search; triggered via header search icon */}

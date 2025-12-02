@@ -216,7 +216,7 @@ export default async function CollectionPage({ params, searchParams }: any) {
                 className="absolute inset-0 h-full w-full object-cover"
               />
             </div>
-            <div className="flex flex-col justify-center space-y-3 px-6 py-6 lg:px-10 bg-primary text-black">
+            <div className="flex flex-col justify-center space-y-3 px-6 py-6 lg:px-10 bg-[#fff7d1] text-black">
               <h1>{col.title}</h1>
               {col.content ? (
                 <div

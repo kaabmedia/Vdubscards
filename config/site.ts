@@ -8,7 +8,7 @@ export const siteConfig = {
   brand: process.env.NEXT_PUBLIC_SITE_BRAND || "V-dubscards",
   // Optional path under /public (e.g. "/logo.svg" or "/logo.png").
   // Leave empty to render brand text instead of an image.
-  logoSrc: process.env.NEXT_PUBLIC_LOGO_SRC || "",
+  logoSrc: process.env.NEXT_PUBLIC_LOGO_SRC || "/logo-vdubs.png",
   heroImage:
     process.env.NEXT_PUBLIC_HERO_IMAGE ||
     "https://images.unsplash.com/photo-1521412644187-c49fa049e84d?auto=format&fit=crop&w=2000&q=80",

@@ -162,19 +162,77 @@ async function getCountdownConfig(): Promise<{ status: boolean; end: string | nu
   }
 }
 
+async function getHeroIntro(): Promise<string | null> {
+  try {
+    const QUERY = /* GraphQL */ `
+      query MyQuery2 {
+        pageBy(pageId: 2645) {
+          homepageacf {
+            heroIntro
+          }
+        }
+      }
+    `;
+    const data = await wpGraphQL<any>(QUERY);
+    const intro = data?.pageBy?.homepageacf?.heroIntro;
+    if (typeof intro === "string" && intro.trim().length > 0) {
+      return intro;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+async function getHeroCardImages(): Promise<string[]> {
+  try {
+    const QUERY = /* GraphQL */ `
+      query MyQuery2 {
+        pageBy(pageId: 2645) {
+          homepageacf {
+            heroKaarten {
+              headerKaart1 { node { sourceUrl } }
+              headerKaart2 { node { sourceUrl } }
+              headerKaart3 { node { sourceUrl } }
+              headerKaart4 { node { sourceUrl } }
+            }
+          }
+        }
+      }
+    `;
+    const data = await wpGraphQL<any>(QUERY);
+    const hero = data?.pageBy?.homepageacf?.heroKaarten;
+    if (!hero) return [];
+    const urls = [
+      hero?.headerKaart1?.node?.sourceUrl,
+      hero?.headerKaart2?.node?.sourceUrl,
+      hero?.headerKaart3?.node?.sourceUrl,
+      hero?.headerKaart4?.node?.sourceUrl,
+    ].filter((u): u is string => typeof u === "string" && u.trim().length > 0);
+    return urls;
+  } catch {
+    return [];
+  }
+}
+
 export const revalidate = 300;
 
 export default async function HomePage() {
-  const [products, events, newArrivals, onSale, collections, countdown] = await Promise.all([
+  const [products, events, newArrivals, onSale, collections, countdown, heroCardImages, heroIntro] = await Promise.all([
     getProducts(),
     getEvents(),
     getNewArrivals(),
     getOnSale(),
     getWPCollections(),
     getCountdownConfig(),
+    getHeroCardImages(),
+    getHeroIntro(),
   ]);
 
   const countdownEnd = countdown.end ?? undefined;
+  const introHtml = (heroIntro && heroIntro.trim().length > 0)
+    ? heroIntro
+    : "V-dubscards is a family-owned shop for serious collectors and new fans alike.";
 
   // Determine if countdown should effectively be shown:
   // status must be true, there must be an end date, and end must be in the future.
@@ -209,18 +267,16 @@ export default async function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-b from-background/0 via-background/20 to-background -z-20" />
 
         {/* Animated cards between background and content */}
-        <HeroCards />
+        <HeroCards images={heroCardImages} />
 
           {/* Content (always on top of cards) */}
           <div className="relative z-10 h-full">
-            <div className="container h-full flex items-center justify-center px-4 pt-4 md:pt-6">
-              <div className="max-w-xl text-center mx-auto bg-background/80 rounded-3xl px-6 py-6 md:px-8 md:py-8 md:-mt-[150px]">
-                <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">
-                  Premium Cards, Comics & Collectibles
-                </h1>
-                <p className="mt-3 text-muted-foreground">
-                  V-dubscards is a family-owned shop for serious collectors and new fans alike.
-                </p>
+            <div className="container h-full flex items-start md:items-center justify-center px-4 pt-0 md:pt-6">
+              <div className="max-w-3xl text-center mx-auto bg-background/80 rounded-3xl px-2 py-6 md:px-8 md:py-8 md:-mt-[150px]">
+                <div
+                  className="mt-3 text-muted-foreground"
+                  dangerouslySetInnerHTML={{ __html: introHtml }}
+                />
                 <div className="mt-6">
                   <Link
                     href="/products"
@@ -232,8 +288,8 @@ export default async function HomePage() {
               </div>
             </div>
             {/* Mascot image aligned to bottom center inside layout */}
-            <div className="pointer-events-none hidden sm:block absolute inset-x-0 bottom-0 md:-bottom-[20px] z-20 hero-eagle">
-              <div className="container flex justify-center px-4 pb-2">
+            <div className="pointer-events-none block absolute inset-x-0 -bottom-14 md:-bottom-[20px] z-20 hero-eagle">
+              <div className="container flex justify-center px-4 pb-0">
                 <Image
                   src="/mascot-v-eagle.png"
                   alt="V-dubscards mascot"
@@ -253,13 +309,13 @@ export default async function HomePage() {
         {products.length > 0 ? (
           <>
             <div className="px-0 pb-5">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
                 {products.map((p) => (
                   <ProductCard key={p.id} product={p} />
                 ))}
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-3 md:mt-4">
               <Button asChild className="gap-1 rounded-full">
                 <Link href="/products">Bekijk alles <ArrowRight className="h-4 w-4" /></Link>
               </Button>
@@ -284,7 +340,7 @@ export default async function HomePage() {
                 <WpCollectionTile key={c.id} item={c} aspectClass="aspect-[4/3.2]" />
               ))}
             </div>
-            <div className="mt-4">
+            <div className="mt-3 md:mt-4">
               <Button asChild className="gap-1 rounded-full">
                 <Link href="/collections">View all collections <ArrowRight className="h-4 w-4" /></Link>
               </Button>
@@ -378,7 +434,7 @@ export default async function HomePage() {
               })()}
             </div>
           </div>
-          <div className="col-span-1 md:col-start-2 md:row-start-2 place-self-start z-10 mt-5 md:mt-0">
+          <div className="col-span-1 md:col-start-2 md:row-start-2 place-self-start z-10 mt-3 md:mt-0">
             <Button asChild className="gap-1 rounded-full">
               <Link href="/events">View all events <ArrowRight className="h-4 w-4" /></Link>
             </Button>
@@ -394,13 +450,13 @@ export default async function HomePage() {
         {newArrivals.length > 0 ? (
           <>
             <div className="px-0 pb-5">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
                 {newArrivals.map((p) => (
                   <ProductCard key={p.id} product={p} />
                 ))}
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-3 md:mt-4">
               <Button asChild className="gap-1 rounded-full">
                 <Link href="/products">View all <ArrowRight className="h-4 w-4" /></Link>
               </Button>
@@ -419,13 +475,13 @@ export default async function HomePage() {
         {onSale.length > 0 ? (
           <>
             <div className="px-0 pb-5">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
                 {onSale.map((p) => (
                   <ProductCard key={p.id} product={p} />
                 ))}
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-3 md:mt-4">
               <Button asChild className="gap-1 rounded-full">
                 <Link href="/products?on_sale=1">View all <ArrowRight className="h-4 w-4" /></Link>
               </Button>

@@ -18,8 +18,9 @@ export function SectionBand({ children, bgClass = "bg-muted/30", className }: Se
         className
       )}
     >
-      <div className="container space-y-6">{children}</div>
+      <div className="mx-auto w-full max-w-6xl lg:max-w-7xl space-y-6 px-4 sm:px-5 md:px-8">
+        {children}
+      </div>
     </section>
   );
 }
-
