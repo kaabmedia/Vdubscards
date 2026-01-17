@@ -18,10 +18,10 @@ export function Footer() {
               Premium cards, comics & collectibles. Curated with care for fans and collectors.
             </p>
             <div className="mt-4 flex items-center gap-3">
-              <a href="#" aria-label="Instagram" className="hover:opacity-80">
+              <a href="https://www.instagram.com/vdubs.sportscards/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:opacity-80">
                 <Instagram className="h-4 w-4" />
               </a>
-              <a href="#" aria-label="Facebook" className="hover:opacity-80">
+              <a href="https://www.facebook.com/vdubs.sportscards/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:opacity-80">
                 <Facebook className="h-4 w-4" />
               </a>
             </div>

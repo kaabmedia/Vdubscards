@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { wpGraphQL } from "@/lib/wp-graphql";
 import { CountdownBanner } from "@/components/marketing/CountdownBanner";
 import { HeroCards } from "@/components/marketing/HeroCards";
+import { EventSlider } from "@/components/marketing/EventSlider";
 
 async function getProducts(): Promise<WCProduct[]> {
   try {
@@ -215,10 +216,51 @@ async function getHeroCardImages(): Promise<string[]> {
   }
 }
 
+async function getEventSliderImages(): Promise<string[]> {
+  try {
+    const QUERY = /* GraphQL */ `
+      query EventSliderImages {
+        pageBy(pageId: 2645) {
+          homepageacf {
+            eventSlider {
+              slide1 {
+                node {
+                  sourceUrl
+                }
+              }
+              slide2 {
+                node {
+                  sourceUrl
+                }
+              }
+              slide3 {
+                node {
+                  sourceUrl
+                }
+              }
+            }
+          }
+        }
+      }
+    `;
+    const data = await wpGraphQL<any>(QUERY);
+    const eventSlider = data?.pageBy?.homepageacf?.eventSlider;
+    if (!eventSlider) return [];
+    const urls = [
+      eventSlider?.slide1?.node?.sourceUrl,
+      eventSlider?.slide2?.node?.sourceUrl,
+      eventSlider?.slide3?.node?.sourceUrl,
+    ].filter((u): u is string => typeof u === "string" && u.trim().length > 0);
+    return urls;
+  } catch {
+    return [];
+  }
+}
+
 export const revalidate = 300;
 
 export default async function HomePage() {
-  const [products, events, newArrivals, onSale, collections, countdown, heroCardImages, heroIntro] = await Promise.all([
+  const [products, events, newArrivals, onSale, collections, countdown, heroCardImages, heroIntro, eventSliderImages] = await Promise.all([
     getProducts(),
     getEvents(),
     getNewArrivals(),
@@ -227,6 +269,7 @@ export default async function HomePage() {
     getCountdownConfig(),
     getHeroCardImages(),
     getHeroIntro(),
+    getEventSliderImages(),
   ]);
 
   const countdownEnd = countdown.end ?? undefined;
@@ -273,10 +316,9 @@ export default async function HomePage() {
           <div className="relative z-10 h-full">
             <div className="container h-full flex items-start md:items-center justify-center px-4 pt-0 md:pt-6">
               <div className="max-w-3xl text-center mx-auto bg-background/80 rounded-3xl px-2 py-6 md:px-8 md:py-8 md:-mt-[150px]">
-                <div
-                  className="mt-3 text-muted-foreground"
-                  dangerouslySetInnerHTML={{ __html: introHtml }}
-                />
+                <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
+                  One of Europe's Largest Single-Card Marketplaces
+                </h1>
                 <div className="mt-6">
                   <Link
                     href="/products"
@@ -337,7 +379,7 @@ export default async function HomePage() {
           <>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
               {collections.slice(0, 5).map((c) => (
-                <WpCollectionTile key={c.id} item={c} aspectClass="aspect-[4/3.2]" />
+                <WpCollectionTile key={c.id} item={c} aspectClass="aspect-[4/5]" />
               ))}
             </div>
             <div className="mt-3 md:mt-4">
@@ -357,16 +399,20 @@ export default async function HomePage() {
           <h2>Come say hi at an event!</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-5 items-stretch">
-          <div className="relative w-full h-56 md:h-full overflow-hidden bg-card shadow-soft">
-            <Image
-              src="/events/vdubs-events.webp"
-              alt="V-dubscards Events"
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority={false}
-            />
-          </div>
+          {eventSliderImages.length > 0 ? (
+            <EventSlider images={eventSliderImages} />
+          ) : (
+            <div className="relative w-full h-56 md:h-full overflow-hidden bg-card shadow-soft">
+              <Image
+                src="/events/vdubs-events.webp"
+                alt="V-dubscards Events"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority={false}
+              />
+            </div>
+          )}
           <div className="md:col-start-2 md:row-start-1">
             <div className="flex flex-col h-full">
               {(() => {

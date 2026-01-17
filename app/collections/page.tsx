@@ -24,7 +24,7 @@ export default async function CollectionsIndexPage() {
         <div className="-mx-4 md:mx-0">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
             {list.map((c) => (
-              <WpCollectionTile key={c.id} item={c} />
+              <WpCollectionTile key={c.id} item={c} aspectClass="aspect-[4/5]" />
             ))}
           </div>
         </div>

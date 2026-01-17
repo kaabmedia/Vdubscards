@@ -98,7 +98,7 @@ export function Navbar({ initialMenu }: { initialMenu?: NavItem[] }) {
               style={{ transform: `translateY(-${uspIndex * slideH}px)`, transition: "transform 500ms ease" }}
             >
               <div ref={slideRef} className="h-7 flex items-center justify-center"><span className="inline-flex items-center gap-2"><Gift className="h-4 w-4" /> Surprise in every order</span></div>
-              <div className="h-7 flex items-center justify-center"><span className="inline-flex items-center gap-2"><Truck className="h-4 w-4" /> Free shipping from €50</span></div>
+              <div className="h-7 flex items-center justify-center"><span className="inline-flex items-center gap-2"><Truck className="h-4 w-4" /> Free shipping from €125</span></div>
               <div className="h-7 flex items-center justify-center"><span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> Secure payments</span></div>
               <div className="h-7 flex items-center justify-center"><span className="inline-flex items-center gap-2"><Package className="h-4 w-4" /> Carefully packed</span></div>
             </div>
@@ -107,7 +107,7 @@ export function Navbar({ initialMenu }: { initialMenu?: NavItem[] }) {
         {/* Desktop: 4 columns */}
         <div className="container px-4 py-2 text-xs md:text-sm hidden md:grid grid-cols-4 items-center">
           <div className="inline-flex items-center gap-2 justify-self-start"><Gift className="h-4 w-4" /> Surprise in every order</div>
-          <div className="inline-flex items-center gap-2 justify-self-center"><Truck className="h-4 w-4" /> Free shipping from €50</div>
+          <div className="inline-flex items-center gap-2 justify-self-center"><Truck className="h-4 w-4" /> Free shipping from €125</div>
           <div className="inline-flex items-center gap-2 justify-self-center"><ShieldCheck className="h-4 w-4" /> Secure payments</div>
           <div className="inline-flex items-center gap-2 justify-self-end"><Package className="h-4 w-4" /> Carefully packed</div>
         </div>

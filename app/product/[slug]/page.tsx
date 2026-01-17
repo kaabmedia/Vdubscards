@@ -77,7 +77,7 @@ export default async function ProductDetail({ params }: any) {
             </Link>
           </div>
           <div className="border-t pt-4 text-xs text-muted-foreground">
-            Levering 1–3 werkdagen binnen NL. Gratis verzending vanaf €50. Retour binnen 14 dagen.
+            Levering 1–3 werkdagen binnen NL. Gratis verzending vanaf €125. Retour binnen 14 dagen.
           </div>
         </div>
       </div>

@@ -223,37 +223,37 @@
 
 .hero-card-1 {
   top: 12%;
-  left: 14%;
+  left: 8%;
   animation: hero-card-float-1 26s linear infinite;
 }
 
 .hero-card-2 {
   top: 8%;
-  right: 12%;
+  right: 8%;
   animation: hero-card-float-2 32s linear infinite;
 }
 
 .hero-card-3 {
   top: 8%;
-  right: 18%;
+  right: 8%;
   animation: hero-card-float-3 30s linear infinite;
 }
 
 .hero-card-4 {
   bottom: 12%;
-  left: 16%;
+  left: 8%;
   animation: hero-card-float-2 34s linear infinite;
 }
 
 .hero-card-5 {
   bottom: 10%;
-  right: 18%;
+  right: 8%;
   animation: hero-card-float-1 28s linear infinite;
 }
 
 .hero-card-6 {
   bottom: 6%;
-  left: 18%;
+  left: 22%;
   animation: hero-card-float-3 36s linear infinite;
 }
 
