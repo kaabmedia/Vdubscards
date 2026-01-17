@@ -14,6 +14,11 @@ export const metadata: Metadata = {
   title: siteConfig.name,
   description: siteConfig.description,
   metadataBase: new URL(siteConfig.url),
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
