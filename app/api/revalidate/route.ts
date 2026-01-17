@@ -18,8 +18,8 @@ export async function GET(req: Request) {
   const tag = searchParams.get("tag") || "";
   const path = searchParams.get("path") || "";
   try {
-    if (tag) revalidateTag(tag);
-    if (path) revalidatePath(path);
+    if (tag) await revalidateTag(tag, "page");
+    if (path) await revalidatePath(path, "page");
     return NextResponse.json({ ok: true, tag: tag || null, path: path || null });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
@@ -39,8 +39,8 @@ export async function POST(req: Request) {
   const tag = (body?.tag as string) || searchParams.get("tag") || "";
   const path = (body?.path as string) || searchParams.get("path") || "";
   try {
-    if (tag) revalidateTag(tag);
-    if (path) revalidatePath(path);
+    if (tag) await revalidateTag(tag, "page");
+    if (path) await revalidatePath(path, "page");
     return NextResponse.json({ ok: true, tag: tag || null, path: path || null });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
