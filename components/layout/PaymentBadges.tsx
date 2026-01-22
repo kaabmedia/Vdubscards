@@ -130,7 +130,13 @@ export function PaymentBadges({ initial }: { initial?: MethodKey[] }) {
     };
   }, []);
 
-  const items = methods.flatMap((m) => iconCandidates(m));
+  // Always show PayPal even if backend doesn't return it
+  const normalized = React.useMemo(() => {
+    const set = new Set<MethodKey>([...methods, "paypal"]);
+    return Array.from(set);
+  }, [methods]);
+
+  const items = normalized.flatMap((m) => iconCandidates(m));
 
   if (!items.length) return null;
 

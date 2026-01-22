@@ -315,7 +315,7 @@ export default async function HomePage() {
           {/* Content (always on top of cards) */}
           <div className="relative z-10 h-full">
             <div className="container h-full flex items-start md:items-center justify-center px-4 pt-0 md:pt-6">
-              <div className="max-w-3xl text-center mx-auto bg-background/80 rounded-3xl px-2 py-6 md:px-8 md:py-8 md:-mt-[150px]">
+              <div className="max-w-3xl text-center mx-auto bg-background/80 backdrop-blur-sm rounded-xl px-4 py-6 md:px-8 md:py-8 md:-mt-[150px]">
                 <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
                   One of Europe's Largest Single-Card Marketplaces
                 </h1>
@@ -358,8 +358,8 @@ export default async function HomePage() {
               </div>
             </div>
             <div className="mt-3 md:mt-4">
-              <Button asChild className="gap-1 rounded-full">
-                <Link href="/products">Bekijk alles <ArrowRight className="h-4 w-4" /></Link>
+              <Button asChild className="gap-1">
+                <Link href="/products">View all <ArrowRight className="h-4 w-4" /></Link>
               </Button>
             </div>
           </>
@@ -377,13 +377,22 @@ export default async function HomePage() {
         </div>
         {collections.length > 0 ? (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-              {collections.slice(0, 5).map((c) => (
-                <WpCollectionTile key={c.id} item={c} aspectClass="aspect-[4/5]" />
-              ))}
-            </div>
+            {(() => {
+              const targetTitles = ["WWE", "MLB", "NFL", "Soccer", "NBA"];
+              const byTitle = targetTitles
+                .map((t) => collections.find((c) => c.title?.toLowerCase() === t.toLowerCase()))
+                .filter((c): c is WpCollection => Boolean(c));
+              const curated = byTitle.length ? byTitle : collections.slice(0, 5);
+              return (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+                  {curated.map((c) => (
+                    <WpCollectionTile key={c.id} item={c} aspectClass="aspect-[4/5]" />
+                  ))}
+                </div>
+              );
+            })()}
             <div className="mt-3 md:mt-4">
-              <Button asChild className="gap-1 rounded-full">
+              <Button asChild className="gap-1">
                 <Link href="/collections">View all collections <ArrowRight className="h-4 w-4" /></Link>
               </Button>
             </div>
@@ -402,7 +411,7 @@ export default async function HomePage() {
           {eventSliderImages.length > 0 ? (
             <EventSlider images={eventSliderImages} />
           ) : (
-            <div className="relative w-full h-56 md:h-full overflow-hidden bg-card shadow-soft">
+            <div className="relative w-full h-56 md:h-full overflow-hidden rounded-md bg-card shadow-sm">
               <Image
                 src="/events/vdubs-events.webp"
                 alt="V-dubscards Events"
@@ -431,7 +440,7 @@ export default async function HomePage() {
                 const top3 = combined.slice(0, 3);
 
                 return top3.length ? (
-                  <div className="flex flex-col space-y-5">
+                  <div className="flex flex-col space-y-4">
                     {top3.map((ev, idx) => {
                       const isFirst = idx === 0;
                       const isUpcoming = Number.isFinite(ev.time) && ev.time >= now;
@@ -439,13 +448,13 @@ export default async function HomePage() {
                         <div
                           key={ev.slug || idx}
                           className={
-                            "relative px-4 md:px-5 py-5 md:py-10 bg-card shadow-soft " +
-                            (isFirst ? " border-2 border-yellow-400 bg-yellow-50" : "")
+                            "relative px-4 md:px-5 py-5 md:py-8 rounded-md border bg-card shadow-sm transition-all hover:shadow-md" +
+                            (isFirst && isUpcoming ? " border-primary bg-primary/5" : "")
                           }
                         >
                           {isFirst && isUpcoming ? (
                             <span
-                              className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 text-[10px] leading-4 uppercase font-semibold tracking-wide text-yellow-900 bg-yellow-300 px-2 py-0.5 border border-yellow-400 rounded-full"
+                              className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 text-[10px] leading-4 uppercase font-semibold tracking-wide bg-primary text-primary-foreground px-2.5 py-0.5 rounded-md"
                             >
                               Next up
                             </span>
@@ -481,7 +490,7 @@ export default async function HomePage() {
             </div>
           </div>
           <div className="col-span-1 md:col-start-2 md:row-start-2 place-self-start z-10 mt-3 md:mt-0">
-            <Button asChild className="gap-1 rounded-full">
+            <Button asChild className="gap-1">
               <Link href="/events">View all events <ArrowRight className="h-4 w-4" /></Link>
             </Button>
           </div>
@@ -503,7 +512,7 @@ export default async function HomePage() {
               </div>
             </div>
             <div className="mt-3 md:mt-4">
-              <Button asChild className="gap-1 rounded-full">
+              <Button asChild className="gap-1">
                 <Link href="/products">View all <ArrowRight className="h-4 w-4" /></Link>
               </Button>
             </div>
@@ -528,7 +537,7 @@ export default async function HomePage() {
               </div>
             </div>
             <div className="mt-3 md:mt-4">
-              <Button asChild className="gap-1 rounded-full">
+              <Button asChild className="gap-1">
                 <Link href="/products?on_sale=1">View all <ArrowRight className="h-4 w-4" /></Link>
               </Button>
             </div>

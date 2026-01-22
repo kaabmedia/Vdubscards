@@ -30,7 +30,7 @@ export function EventSlider({ images }: EventSliderProps) {
   if (images.length === 0) return null;
 
   return (
-    <div className="relative w-full h-56 md:h-full overflow-hidden bg-card shadow-soft">
+    <div className="relative w-full h-56 md:h-full overflow-hidden rounded-md bg-card shadow-sm">
       {/* Images container */}
       <div className="relative w-full h-full">
         {images.map((url, idx) => (
@@ -57,61 +57,27 @@ export function EventSlider({ images }: EventSliderProps) {
         <>
           <button
             onClick={goToPrevious}
-            className="absolute left-2 top-1/2 z-20 bg-black/50 text-white rounded-full p-2 focus:outline-none focus:ring-0"
-            style={{
-              transform: 'translateY(-50%)',
-              transition: 'none',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-50%)';
-              e.currentTarget.style.filter = 'none';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(-50%)';
-              e.currentTarget.style.filter = 'none';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-            onMouseDown={(e) => {
-              e.currentTarget.style.transform = 'translateY(-50%)';
-            }}
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white rounded-md p-2 !transform-none !shadow-none !filter-none"
             aria-label="Previous slide"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
           <button
             onClick={goToNext}
-            className="absolute right-2 top-1/2 z-20 bg-black/50 text-white rounded-full p-2 focus:outline-none focus:ring-0"
-            style={{
-              transform: 'translateY(-50%)',
-              transition: 'none',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-50%)';
-              e.currentTarget.style.filter = 'none';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(-50%)';
-              e.currentTarget.style.filter = 'none';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-            onMouseDown={(e) => {
-              e.currentTarget.style.transform = 'translateY(-50%)';
-            }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-black/50 text-white rounded-md p-2 !transform-none !shadow-none !filter-none"
             aria-label="Next slide"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
 
           {/* Dots indicator */}
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
             {images.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentIndex(idx)}
-                className={`h-2 rounded-full transition-all ${
-                  idx === currentIndex ? "w-6 bg-white" : "w-2 bg-white/50 hover:bg-white/75"
+                className={`h-2 rounded-sm !transform-none !shadow-none !filter-none ${
+                  idx === currentIndex ? "w-6 bg-primary" : "w-2 bg-white/60"
                 }`}
                 aria-label={`Go to slide ${idx + 1}`}
               />

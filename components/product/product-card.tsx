@@ -21,7 +21,7 @@ export function ProductCard({ product }: { product: WCProduct }) {
   const outOfStock = (product.stock_status && product.stock_status !== "instock") || (typeof product.stock_quantity === "number" && product.stock_quantity <= 0);
 
   return (
-    <div className="group rounded-none border-t border-b md:border border-l-0 border-r-0 odd:border-l md:border-l md:border-r bg-card text-card-foreground shadow-card overflow-hidden h-full transition-transform hover:-translate-y-0.5">
+    <div className="group rounded-md border bg-card text-card-foreground shadow-sm overflow-hidden h-full transition-all hover:-translate-y-0.5 hover:shadow-md">
       <Link href={href} className="block">
         <div className="relative aspect-[3/4] bg-muted">
           {/* Wishlist toggle: hide when out of stock */}
@@ -32,12 +32,12 @@ export function ProductCard({ product }: { product: WCProduct }) {
           ) : null}
           {outOfStock ? (
             <div className="absolute left-2 top-2 z-20">
-              <Badge className="bg-black text-white">Out of stock</Badge>
+              <Badge variant="secondary">Out of stock</Badge>
             </div>
           ) : null}
           {!outOfStock && product.on_sale ? (
             <div className="absolute left-2 top-2 z-20">
-              <Badge className="bg-purple-600 text-white border-transparent">Sale</Badge>
+              <Badge variant="sale">Sale</Badge>
             </div>
           ) : null}
           {image ? (
@@ -59,8 +59,8 @@ export function ProductCard({ product }: { product: WCProduct }) {
                 />
               ) : null}
               {outOfStock ? (
-                <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-black/35">
-                  <span className="px-2.5 py-0.5 rounded-full bg-black/60 text-white text-[11px] uppercase tracking-wide">Sold out</span>
+                <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-black/40">
+                  <span className="px-3 py-1 rounded-md bg-secondary text-secondary-foreground text-xs font-medium uppercase tracking-wide">Sold out</span>
                 </div>
               ) : null}
             </>
@@ -92,7 +92,7 @@ export function ProductCard({ product }: { product: WCProduct }) {
           {outOfStock ? null : (
             <AddToCartButton
               productId={product.id}
-              className="w-full h-10 rounded-none bg-black text-white hover:bg-primary hover:text-black transition-colors"
+              className="w-full h-10 rounded-md bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
             />
           )}
         </div>

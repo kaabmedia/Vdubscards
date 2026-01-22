@@ -125,12 +125,13 @@ function EmailOptin({ topic }: { topic?: string }) {
         placeholder="you@example.com"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="!rounded-none bg-white text-black w-full sm:w-72"
+        className="rounded-md bg-white text-foreground w-full sm:w-72"
       />
       <Button
         type="submit"
         disabled={loading}
-        className="w-full sm:w-auto rounded-none bg-purple-600 text-white hover:bg-purple-700"
+        variant="secondary"
+        className="w-full sm:w-auto"
       >
         {loading ? "Sending…" : "Notify me"}
       </Button>

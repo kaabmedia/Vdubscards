@@ -20,7 +20,14 @@ export function Main({ children, className }: MainProps) {
   const noTop = isHome || noTopPaddingRoutes.has(pathname || "") || startsWithNoTop(pathname);
 
   return (
-    <main className={cn("container", !noTop && "pt-16", className)}>
+    <main
+      className={cn(
+        "container",
+        isHome ? "py-0" : "py-10 md:py-12",
+        !isHome && noTop && "pt-0",
+        className
+      )}
+    >
       {children}
     </main>
   );

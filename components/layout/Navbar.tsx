@@ -23,6 +23,7 @@ export function Navbar({ initialMenu }: { initialMenu?: NavItem[] }) {
   const [uspIndex, setUspIndex] = React.useState(0);
   const slideRef = React.useRef<HTMLDivElement | null>(null);
   const [slideH, setSlideH] = React.useState(28);
+  
   React.useEffect(() => {
     const measure = () => {
       const el = headerRef.current;
@@ -38,25 +39,48 @@ export function Navbar({ initialMenu }: { initialMenu?: NavItem[] }) {
   React.useEffect(() => {
     // Recalculate announcement/USP height when visibility toggles
     const m = marqueeRef.current;
-    if (m) setAnnouncementHeight(m.getBoundingClientRect().height);
+    if (m) {
+      // Use requestAnimationFrame to ensure DOM is updated
+      requestAnimationFrame(() => {
+        setAnnouncementHeight(m.getBoundingClientRect().height);
+      });
+    }
   }, [uspVisible]);
-
-  // Auto-advance USP carousel on mobile every 3 seconds
-  React.useEffect(() => {
-    const id = setInterval(() => setUspIndex((i) => (i + 1) % 4), 3000);
-    return () => clearInterval(id);
-  }, []);
 
   // Measure slide height for precise translateY on mobile carousel
   React.useEffect(() => {
     const measure = () => {
       const el = slideRef.current;
-      if (el) setSlideH(el.getBoundingClientRect().height || 28);
+      if (el) {
+        const height = el.getBoundingClientRect().height;
+        // Ensure minimum height and valid measurement
+        if (height > 0) {
+          setSlideH(height);
+        } else {
+          // Fallback to default if measurement fails
+          setSlideH(28);
+        }
+      }
     };
+    // Measure after a short delay to ensure DOM is ready
+    const timeoutId = setTimeout(measure, 50);
     measure();
     window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, []);
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener("resize", measure);
+    };
+  }, [uspVisible]);
+
+  // Auto-advance USP carousel on mobile every 3 seconds
+  // Only advance if USP is visible and slideH is valid
+  React.useEffect(() => {
+    if (!uspVisible || slideH <= 0) return;
+    const id = setInterval(() => {
+      setUspIndex((i) => (i + 1) % 4);
+    }, 3000);
+    return () => clearInterval(id);
+  }, [uspVisible, slideH]);
 
   // Lock scroll if either panel is open
   React.useEffect(() => {
@@ -92,10 +116,13 @@ export function Navbar({ initialMenu }: { initialMenu?: NavItem[] }) {
       >
         {/* Mobile: single USP carousel with slide effect */}
         <div className="container px-4 py-1 text-xs md:hidden">
-          <div className="overflow-hidden" style={{ height: slideH }}>
+          <div className="overflow-hidden" style={{ height: Math.max(slideH, 28) }}>
             <div
               className="flex flex-col will-change-transform"
-              style={{ transform: `translateY(-${uspIndex * slideH}px)`, transition: "transform 500ms ease" }}
+              style={{ 
+                transform: `translateY(-${uspIndex * Math.max(slideH, 28)}px)`, 
+                transition: slideH > 0 ? "transform 500ms ease" : "none"
+              }}
             >
               <div ref={slideRef} className="h-7 flex items-center justify-center"><span className="inline-flex items-center gap-2"><Gift className="h-4 w-4" /> Surprise in every order</span></div>
               <div className="h-7 flex items-center justify-center"><span className="inline-flex items-center gap-2"><Truck className="h-4 w-4" /> Free shipping from €125</span></div>

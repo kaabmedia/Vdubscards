@@ -13,7 +13,7 @@ export type WpCollection = {
 export function WpCollectionTile({ item, aspectClass = "aspect-[4/3]" }: { item: WpCollection; aspectClass?: string }) {
   const href = `/collections/${item.slug}`;
   return (
-    <Link href={href as any} className="group block overflow-hidden rounded-none border bg-card shadow-soft">
+    <Link href={href as any} className="group block overflow-hidden rounded-md border bg-card shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5">
       <div className={`relative ${aspectClass} bg-muted`}>
         {item.image ? (
           <Image
@@ -28,7 +28,7 @@ export function WpCollectionTile({ item, aspectClass = "aspect-[4/3]" }: { item:
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-3">
-          <div className="inline-flex items-center bg-white/95 px-2 py-1 text-xs font-medium text-black shadow">
+          <div className="inline-flex items-center bg-white px-2.5 py-1 text-xs font-medium text-black rounded-md shadow-sm">
             {item.title}
           </div>
         </div>

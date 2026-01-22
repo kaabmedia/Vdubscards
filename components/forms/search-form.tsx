@@ -64,13 +64,13 @@ export function SearchForm({
             id="q"
             placeholder="Search products..."
             {...form.register("q")}
-            className={cn("h-11 w-full pl-9 rounded-none", inputClassName)}
+            className={cn("h-11 w-full pl-9 rounded-md", inputClassName)}
           />
         </div>
         {showButton ? (
           <Button
             type="submit"
-            className={cn("h-11 rounded-none", buttonClassName)}
+            className={cn("h-11", buttonClassName)}
             aria-label={buttonAriaLabel || (typeof buttonText === "string" ? buttonText : "Search")}
           >
             {buttonIcon ?? buttonText}

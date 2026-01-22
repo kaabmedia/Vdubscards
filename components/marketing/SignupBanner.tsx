@@ -39,28 +39,28 @@ export function SignupBanner() {
         <div className="grid gap-6 md:grid-cols-3 md:items-center">
           <div className="md:col-span-2">
             <h2 className="text-2xl md:text-3xl font-semibold">Exclusive deals & drop announcements</h2>
-            <p className="text-sm text-black/70 mt-1">Schrijf je in en hoor als eerste over nieuwe drops, restocks en exclusieve acties.</p>
+            <p className="text-sm text-black/70 mt-1">Sign up and be the first to hear about new drops, restocks and exclusive deals.</p>
           </div>
           <form onSubmit={onSubmit} className="flex gap-2 md:justify-end">
             <Input
               type="email"
-              placeholder="jij@voorbeeld.nl"
+              placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="!rounded-none bg-white text-black w-full md:w-72"
+              className="rounded-md bg-white text-foreground w-full md:w-72"
             />
             <Button
               disabled={loading}
-              className="rounded-none bg-black text-white hover:bg-black/90"
+              variant="secondary"
             >
-              {loading ? "Versturen…" : "Inschrijven"}
+              {loading ? "Sending…" : "Subscribe"}
             </Button>
           </form>
         </div>
         {done === "ok" ? (
-          <p className="mt-2 text-xs text-black/70">Bedankt! Check je inbox om je inschrijving te bevestigen.</p>
+          <p className="mt-2 text-xs text-primary-foreground/70">Thanks! Check your inbox to confirm your subscription.</p>
         ) : done === "err" ? (
-          <p className="mt-2 text-xs text-red-700">Kon niet inschrijven. Controleer je e‑mail en probeer opnieuw.</p>
+          <p className="mt-2 text-xs text-destructive">Could not subscribe. Please check your email and try again.</p>
         ) : null}
       </div>
     </section>
