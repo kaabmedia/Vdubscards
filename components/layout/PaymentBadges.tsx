@@ -14,8 +14,7 @@ type MethodKey =
   | "apple_pay"
   | "link";
 
-const provider = "simple";
-const localIcon = (name: string) => `/payments/${name}.svg`;
+const localIcon = (name: string) => `/payments/${name}`;
 
 function siCandidates(slug: string) {
   return [
@@ -26,31 +25,29 @@ function siCandidates(slug: string) {
 
 function iconCandidates(method: MethodKey): { sources: string[]; alt: string }[] {
   const SI = (s: string, alt: string) => ({ sources: siCandidates(s), alt });
-  const LOC = (name: string, alt: string, fallbackSlug: string) => ({
-    sources: [localIcon(name), ...siCandidates(fallbackSlug)],
+  const LOC = (filename: string, alt: string, fallbackSlug: string) => ({
+    sources: [localIcon(filename), ...siCandidates(fallbackSlug)],
     alt,
   });
   switch (method) {
     case "card":
       return [SI("visa", "Visa"), SI("mastercard", "Mastercard")];
     case "ideal":
-      return [LOC("ideal-color", "iDEAL", "ideal")];
+      return [LOC("ideal-logo-1024.png", "iDEAL", "ideal")];
     case "klarna":
       return [SI("klarna", "Klarna")];
     case "bancontact":
-      return [LOC("bancontact-color", "Bancontact", "bancontact")];
+      return [LOC("Bancontact_logo.svg.png", "Bancontact", "bancontact")];
     case "giropay":
       return [SI("giropay", "giropay")];
     case "eps":
-      return [LOC("eps-color", "EPS", "eps")];
+      return [LOC("eps-logo-color.png", "EPS", "eps")];
     case "sofort":
       return [SI("sofort", "SOFORT")];
     case "paypal":
       return [SI("paypal", "PayPal")];
     case "apple_pay":
       return [SI("applepay", "Apple Pay")];
-    case "link":
-      return [SI("link", "Link")];
     default:
       return [];
   }
@@ -95,15 +92,19 @@ export function PaymentBadges({ initial }: { initial?: MethodKey[] }) {
     };
   }, []);
 
-  // Always show PayPal even if backend doesn't return it
+  // Always show PayPal even if backend doesn't return it; drop giropay/link; keep original order
   const normalized = React.useMemo(() => {
-    const set = new Set<MethodKey>([...methods, "paypal"]);
-    return Array.from(set);
+    const order = [...methods, "paypal"];
+    const seen = new Set<MethodKey>();
+    return order.filter((m) => {
+      if (m === "giropay" || m === "link") return false;
+      if (seen.has(m)) return false;
+      seen.add(m);
+      return true;
+    });
   }, [methods]);
 
-  const items = normalized
-    .filter((m) => m !== "giropay")
-    .flatMap((m) => iconCandidates(m));
+  const items = normalized.flatMap((m) => iconCandidates(m));
 
   if (!items.length) return null;
 
