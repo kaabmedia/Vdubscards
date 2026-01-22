@@ -7,12 +7,10 @@ type MethodKey =
   | "ideal"
   | "klarna"
   | "bancontact"
-  | "giropay"
   | "eps"
   | "sofort"
   | "paypal"
-  | "apple_pay"
-  | "link";
+  | "apple_pay";
 
 const localIcon = (name: string) => `/payments/${name}`;
 
@@ -38,8 +36,6 @@ function iconCandidates(method: MethodKey): { sources: string[]; alt: string }[]
       return [SI("klarna", "Klarna")];
     case "bancontact":
       return [LOC("Bancontact_logo.svg.png", "Bancontact", "bancontact")];
-    case "giropay":
-      return [SI("giropay", "giropay")];
     case "eps":
       return [LOC("eps-logo-color.png", "EPS", "eps")];
     case "sofort":
@@ -69,6 +65,9 @@ function PaymentIcon({ sources, alt }: { sources: string[]; alt: string }) {
 
 export function PaymentBadges({ initial }: { initial?: MethodKey[] }) {
   const [methods, setMethods] = React.useState<MethodKey[]>(initial || []);
+  const isMethodKey = (m: unknown): m is MethodKey =>
+    typeof m === "string" &&
+    ["card", "ideal", "klarna", "bancontact", "eps", "sofort", "paypal", "apple_pay"].includes(m);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -83,7 +82,10 @@ export function PaymentBadges({ initial }: { initial?: MethodKey[] }) {
       } catch {}
       // Fallback when Stripe key/config is missing: use env or sensible defaults
       if (!cancelled) {
-        const envList = (process.env.NEXT_PUBLIC_PAYMENT_METHODS || "card,ideal,bancontact,paypal,apple_pay").split(",").map((s) => s.trim()) as MethodKey[];
+        const envList = (process.env.NEXT_PUBLIC_PAYMENT_METHODS || "card,ideal,bancontact,paypal,apple_pay")
+          .split(",")
+          .map((s) => s.trim())
+          .filter(isMethodKey);
         setMethods(envList);
       }
     })();
@@ -96,12 +98,14 @@ export function PaymentBadges({ initial }: { initial?: MethodKey[] }) {
   const normalized = React.useMemo(() => {
     const order = [...methods, "paypal"];
     const seen = new Set<MethodKey>();
-    return order.filter((m) => {
-      if (m === "giropay" || m === "link") return false;
-      if (seen.has(m)) return false;
+    const out: MethodKey[] = [];
+    for (const m of order) {
+      if (!isMethodKey(m)) continue;
+      if (seen.has(m)) continue;
       seen.add(m);
-      return true;
-    });
+      out.push(m);
+    }
+    return out;
   }, [methods]);
 
   const items = normalized.flatMap((m) => iconCandidates(m));
