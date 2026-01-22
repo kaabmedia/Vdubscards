@@ -14,10 +14,8 @@ type MethodKey =
   | "apple_pay"
   | "link";
 
-// Provider via env: "activemerchant" (kleur, default) of "simple" (monochroom)
-const provider = (process.env.NEXT_PUBLIC_PAYMENT_BADGES_CDN || "simple").toLowerCase();
-
-const localIcon = (name: string) => `/payments/${name}.svg`;
+// Force monochrome/simple icon set for a clean, uniform footer look
+const provider = "simple";
 
 function amCandidates(name: string | string[]) {
   const names = Array.isArray(name) ? name : [name];
@@ -40,63 +38,30 @@ function siCandidates(slug: string) {
 }
 
 function iconCandidates(method: MethodKey): { sources: string[]; alt: string }[] {
-  const useAM = provider !== "simple";
-  const withLocal = (name: string, remoteSources: string[], alt: string) => ({
-    sources: [localIcon(name), ...remoteSources],
-    alt,
-  });
-  const AM = (n: string | string[], alt: string) => {
-    const first = Array.isArray(n) ? n[0] : n;
-    return withLocal(first, amCandidates(n), alt);
-  };
-  const SI = (s: string, alt: string) => withLocal(s, siCandidates(s), alt);
-  if (useAM) {
-    switch (method) {
-      case "card":
-        return [AM("visa", "Visa"), AM("mastercard", "Mastercard")];
-      case "ideal":
-        return [AM("ideal", "iDEAL")];
-      case "klarna":
-        return [AM("klarna", "Klarna")];
-      case "bancontact":
-        return [AM("bancontact", "Bancontact")];
-      case "giropay":
-        return [AM("giropay", "giropay")];
-      case "eps":
-        return [AM("eps", "EPS")];
-      case "sofort":
-        return [AM("sofort", "SOFORT")];
-      case "paypal":
-        return [AM("paypal", "PayPal")];
-      case "apple_pay":
-        // Repo sometimes uses hyphen, sometimes underscore; include both
-        return [AM(["apple_pay", "apple-pay"], "Apple Pay")];
-      default:
-        return [];
-    }
-  } else {
-    switch (method) {
-      case "card":
-        return [SI("visa", "Visa"), SI("mastercard", "Mastercard")];
-      case "ideal":
-        return [SI("ideal", "iDEAL")];
-      case "klarna":
-        return [SI("klarna", "Klarna")];
-      case "bancontact":
-        return [SI("bancontact", "Bancontact")];
-      case "giropay":
-        return [SI("giropay", "giropay")];
-      case "eps":
-        return [SI("eps", "EPS")];
-      case "sofort":
-        return [SI("sofort", "SOFORT")];
-      case "paypal":
-        return [SI("paypal", "PayPal")];
-      case "apple_pay":
-        return [SI("applepay", "Apple Pay")];
-      default:
-        return [];
-    }
+  const SI = (s: string, alt: string) => ({ sources: siCandidates(s), alt });
+  switch (method) {
+    case "card":
+      return [SI("visa", "Visa"), SI("mastercard", "Mastercard")];
+    case "ideal":
+      return [SI("ideal", "iDEAL")];
+    case "klarna":
+      return [SI("klarna", "Klarna")];
+    case "bancontact":
+      return [SI("bancontact", "Bancontact")];
+    case "giropay":
+      return [SI("giropay", "giropay")];
+    case "eps":
+      return [SI("eps", "EPS")];
+    case "sofort":
+      return [SI("sofort", "SOFORT")];
+    case "paypal":
+      return [SI("paypal", "PayPal")];
+    case "apple_pay":
+      return [SI("applepay", "Apple Pay")];
+    case "link":
+      return [SI("link", "Link")];
+    default:
+      return [];
   }
 }
 
@@ -108,7 +73,7 @@ function PaymentIcon({ sources, alt }: { sources: string[]; alt: string }) {
       alt={alt}
       loading="lazy"
       decoding="async"
-      className="h-5 w-auto md:h-6"
+      className="h-5 w-auto md:h-6 opacity-80"
       onError={() => setIdx((i) => (i + 1 < sources.length ? i + 1 : i))}
     />
   );
@@ -152,7 +117,7 @@ export function PaymentBadges({ initial }: { initial?: MethodKey[] }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       {items.map((i, idx) => (
-        <span key={idx} className="inline-flex items-center rounded bg-white px-2 py-1">
+        <span key={idx} className="inline-flex min-w-[48px] items-center justify-center rounded-md bg-white px-2.5 py-1.5 border border-border/60 shadow-sm">
           <PaymentIcon sources={i.sources} alt={i.alt} />
         </span>
       ))}
