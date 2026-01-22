@@ -1,0 +1,10 @@
+<svg width="260" height="140" viewBox="0 0 260 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="eps logo">
+  <rect width="260" height="140" rx="12" fill="#ffffff"/>
+  <!-- Magenta padlock -->
+  <path d="M70 22c-18 0-32 12-32 30v12h16v-12c0-9 7-16 16-16s16 7 16 16v12h16V52c0-18-14-30-32-30Z" fill="#d40072"/>
+  <rect x="34" y="52" width="96" height="74" rx="14" fill="#d40072"/>
+  <text x="72" y="110" font-size="72" font-family="Arial, Helvetica, sans-serif" font-weight="800" fill="#ffffff" text-anchor="middle">e</text>
+  <!-- Grey text -->
+  <text x="136" y="98" font-size="72" font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="#7a7a7a">ps</text>
+  <text x="138" y="124" font-size="22" font-family="Arial, Helvetica, sans-serif" font-style="italic" fill="#7a7a7a">Überweisung</text>
+</svg>

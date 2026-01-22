@@ -1,0 +1,6 @@
+<svg width="200" height="90" viewBox="0 0 200 90" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bancontact logo">
+  <rect width="200" height="90" rx="12" fill="#ffffff"/>
+  <polygon points="30,18 190,18 150,44 0,44" fill="#f2cf00"/>
+  <polygon points="0,42 170,42 130,70 0,70" fill="#1b75bc"/>
+  <text x="8" y="86" font-size="26" font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="#1b75bc">Bancontact</text>
+</svg>

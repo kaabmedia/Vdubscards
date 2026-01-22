@@ -14,21 +14,8 @@ type MethodKey =
   | "apple_pay"
   | "link";
 
-// Force monochrome/simple icon set for a clean, uniform footer look
 const provider = "simple";
-
-function amCandidates(name: string | string[]) {
-  const names = Array.isArray(name) ? name : [name];
-  const out: string[] = [];
-  for (const n of names) {
-    out.push(
-      `https://cdn.statically.io/gh/activemerchant/payment_icons/master/public/payment_icons/${n}.svg`,
-      `https://cdn.jsdelivr.net/gh/activemerchant/payment_icons@latest/public/payment_icons/${n}.svg`,
-      `https://raw.githubusercontent.com/activemerchant/payment_icons/master/public/payment_icons/${n}.svg`
-    );
-  }
-  return out;
-}
+const localIcon = (name: string) => `/payments/${name}.svg`;
 
 function siCandidates(slug: string) {
   return [
@@ -39,19 +26,23 @@ function siCandidates(slug: string) {
 
 function iconCandidates(method: MethodKey): { sources: string[]; alt: string }[] {
   const SI = (s: string, alt: string) => ({ sources: siCandidates(s), alt });
+  const LOC = (name: string, alt: string, fallbackSlug: string) => ({
+    sources: [localIcon(name), ...siCandidates(fallbackSlug)],
+    alt,
+  });
   switch (method) {
     case "card":
       return [SI("visa", "Visa"), SI("mastercard", "Mastercard")];
     case "ideal":
-      return [SI("ideal", "iDEAL")];
+      return [LOC("ideal-color", "iDEAL", "ideal")];
     case "klarna":
       return [SI("klarna", "Klarna")];
     case "bancontact":
-      return [SI("bancontact", "Bancontact")];
+      return [LOC("bancontact-color", "Bancontact", "bancontact")];
     case "giropay":
       return [SI("giropay", "giropay")];
     case "eps":
-      return [SI("eps", "EPS")];
+      return [LOC("eps-color", "EPS", "eps")];
     case "sofort":
       return [SI("sofort", "SOFORT")];
     case "paypal":
@@ -110,7 +101,9 @@ export function PaymentBadges({ initial }: { initial?: MethodKey[] }) {
     return Array.from(set);
   }, [methods]);
 
-  const items = normalized.flatMap((m) => iconCandidates(m));
+  const items = normalized
+    .filter((m) => m !== "giropay")
+    .flatMap((m) => iconCandidates(m));
 
   if (!items.length) return null;
 
