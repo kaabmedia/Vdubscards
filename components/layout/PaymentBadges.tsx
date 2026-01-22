@@ -17,6 +17,8 @@ type MethodKey =
 // Provider via env: "activemerchant" (kleur, default) of "simple" (monochroom)
 const provider = (process.env.NEXT_PUBLIC_PAYMENT_BADGES_CDN || "simple").toLowerCase();
 
+const localIcon = (name: string) => `/payments/${name}.svg`;
+
 function amCandidates(name: string | string[]) {
   const names = Array.isArray(name) ? name : [name];
   const out: string[] = [];
@@ -39,8 +41,15 @@ function siCandidates(slug: string) {
 
 function iconCandidates(method: MethodKey): { sources: string[]; alt: string }[] {
   const useAM = provider !== "simple";
-  const AM = (n: string | string[], alt: string) => ({ sources: amCandidates(n), alt });
-  const SI = (s: string, alt: string) => ({ sources: siCandidates(s), alt });
+  const withLocal = (name: string, remoteSources: string[], alt: string) => ({
+    sources: [localIcon(name), ...remoteSources],
+    alt,
+  });
+  const AM = (n: string | string[], alt: string) => {
+    const first = Array.isArray(n) ? n[0] : n;
+    return withLocal(first, amCandidates(n), alt);
+  };
+  const SI = (s: string, alt: string) => withLocal(s, siCandidates(s), alt);
   if (useAM) {
     switch (method) {
       case "card":
@@ -99,7 +108,7 @@ function PaymentIcon({ sources, alt }: { sources: string[]; alt: string }) {
       alt={alt}
       loading="lazy"
       decoding="async"
-      className="h-4 w-auto"
+      className="h-5 w-auto md:h-6"
       onError={() => setIdx((i) => (i + 1 < sources.length ? i + 1 : i))}
     />
   );
