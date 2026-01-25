@@ -26,8 +26,9 @@ function buildQS(obj: any) {
 }
 
 async function getProducts(paramsAll: Record<string, string | null | undefined>) {
+  const perPage = 24;
   const qs = new URLSearchParams();
-  qs.set("per_page", "24");
+  qs.set("per_page", String(perPage));
   for (const [k, v] of Object.entries(paramsAll)) {
     if (v == null) continue;
     if (
@@ -50,8 +51,40 @@ async function getProducts(paramsAll: Record<string, string | null | undefined>)
       cache: "no-store",
     });
     if (!res.ok) return { items: [] as WCProduct[], totalPages: 1 };
-    const totalPages = Number(res.headers.get("x-wp-totalpages") || res.headers.get("x-total-pages") || "0") || 1;
-    const items = (await res.json()) as WCProduct[];
+    const totalPagesHeader = Number(res.headers.get("x-wp-totalpages") || res.headers.get("x-total-pages") || "0") || 1;
+    let items = (await res.json()) as WCProduct[];
+
+    // Client-side safety net: ensure on_sale filter only shows discounted items
+    const wantSaleOnly = (() => {
+      const v = paramsAll?.on_sale;
+      if (v == null) return false;
+      const s = String(v).toLowerCase();
+      return s === "1" || s === "true" || s === "yes";
+    })();
+    const isSaleProduct = (p: WCProduct) => {
+      if (!p) return false;
+      // Get price values - handle both REST API and Store API formats
+      const price = Number((p as any).price ?? (p as any).prices?.price);
+      const sale = Number((p as any).sale_price ?? (p as any).prices?.sale_price);
+      const regular = Number(
+        (p as any).regular_price ??
+        (p as any).prices?.regular_price ??
+        (p as any).prices?.regular_price_min ??
+        (p as any).prices?.regular_price_max
+      );
+      // Require an actual price difference, not just the on_sale flag
+      if (Number.isFinite(sale) && sale > 0 && Number.isFinite(regular) && regular > 0 && sale < regular) return true;
+      if (Number.isFinite(price) && price > 0 && Number.isFinite(regular) && regular > 0 && price < regular) return true;
+      return false;
+    };
+    if (wantSaleOnly) {
+      items = items.filter(isSaleProduct);
+    }
+
+    const totalPages = wantSaleOnly
+      ? Math.max(1, Math.ceil(items.length / perPage))
+      : totalPagesHeader;
+
     return { items, totalPages };
   } catch {
     return { items: [] as WCProduct[], totalPages: 1 };

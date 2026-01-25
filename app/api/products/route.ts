@@ -5,18 +5,27 @@ import { wooFetch, wooFetchRaw } from "@/lib/wooClient";
 import { WCProduct } from "@/lib/types";
 
 export const runtime = "nodejs";
-export const revalidate = 300; // cache API responses for 5 minutes
+// Do not cache this route so sale filters stay accurate
+export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const page = searchParams.get("page") ?? undefined;
     const per_page = searchParams.get("per_page") ?? "12";
+    const perPageNum = Math.max(1, Number(per_page) || 12);
     const search = searchParams.get("search") ?? undefined;
     const category = searchParams.get("category") ?? undefined;
     const slug = searchParams.get("slug") ?? undefined;
     const orderby = searchParams.get("orderby") ?? undefined;
-    const on_sale = searchParams.get("on_sale") ?? undefined;
+    const on_sale_raw = searchParams.get("on_sale");
+    const on_sale = (() => {
+      if (on_sale_raw == null) return undefined;
+      const v = String(on_sale_raw).toLowerCase();
+      if (v === "1" || v === "true" || v === "yes") return "true";
+      if (v === "0" || v === "false" || v === "no") return undefined;
+      return v;
+    })();
     const featured = searchParams.get("featured") ?? undefined;
     const random = searchParams.get("random") ?? undefined;
     const unique = searchParams.get("unique") ?? undefined;
@@ -33,6 +42,8 @@ export async function GET(req: NextRequest) {
       }
     });
 
+    const wantSaleOnly = on_sale === "true";
+
     const params: Record<string, string> = {
       per_page: String(per_page),
     };
@@ -47,6 +58,23 @@ export async function GET(req: NextRequest) {
     if (max_price) params.max_price = String(max_price);
 
     const useBasic = Boolean(process.env.WC_BASE_URL && process.env.WC_KEY && process.env.WC_SECRET);
+
+    const isSaleProduct = (p: WCProduct) => {
+      if (!p) return false;
+      // Get price values - handle both REST API and Store API formats
+      const price = Number((p as any).price ?? (p as any).prices?.price);
+      const sale = Number((p as any).sale_price ?? (p as any).prices?.sale_price);
+      const regular = Number(
+        (p as any).regular_price ??
+        (p as any).prices?.regular_price ??
+        (p as any).prices?.regular_price_min ??
+        (p as any).prices?.regular_price_max
+      );
+      // Require an actual price difference, not just the on_sale flag
+      if (Number.isFinite(sale) && sale > 0 && Number.isFinite(regular) && regular > 0 && sale < regular) return true;
+      if (Number.isFinite(price) && price > 0 && Number.isFinite(regular) && regular > 0 && price < regular) return true;
+      return false;
+    };
 
     // Random mode: compute random slice or unique random picks across catalog
     if (random && unique) {
@@ -79,7 +107,8 @@ export async function GET(req: NextRequest) {
       });
 
       const batches = await Promise.all(requests);
-      const flat = batches.flat();
+      let flat = batches.flat();
+      if (wantSaleOnly) flat = flat.filter(isSaleProduct);
       return NextResponse.json(flat, { status: 200 });
     }
 
@@ -95,7 +124,8 @@ export async function GET(req: NextRequest) {
       const randomParams: Record<string, string | number> = { ...params, offset };
       const qs = new URLSearchParams(Object.entries(randomParams).reduce((acc, [k, v]) => { acc.set(k, String(v)); return acc; }, new URLSearchParams()));
       const path = `/wp-json/wc/v3/products?${qs.toString()}`;
-      const res = useBasic ? await wooFetch<WCProduct[]>(path) : await wcFetch<WCProduct[]>("products", randomParams as any);
+      let res = useBasic ? await wooFetch<WCProduct[]>(path) : await wcFetch<WCProduct[]>("products", randomParams as any);
+      if (wantSaleOnly) res = res.filter(isSaleProduct);
       return NextResponse.json(res, { status: 200 });
     }
 
@@ -147,7 +177,8 @@ export async function GET(req: NextRequest) {
           fetchWith({ min_price: String(r.min), max_price: r.max != null ? String(r.max) : undefined })
         );
         const batches = await Promise.all(requests);
-        const flat = batches.flat();
+        let flat = batches.flat();
+        if (wantSaleOnly) flat = flat.filter(isSaleProduct);
         const dedup = new Map<number, WCProduct>();
         for (const p of flat) dedup.set(p.id, p);
         const all = Array.from(dedup.values());
@@ -174,10 +205,11 @@ export async function GET(req: NextRequest) {
       }
       const path = `/wp-json/wc/v3/products?${qs.toString()}`;
       const res = await wooFetchRaw(path);
-      const body = await res.json();
+      let body = await res.json();
+      if (wantSaleOnly && Array.isArray(body)) body = body.filter(isSaleProduct);
       const headers = new Headers();
-      const total = res.headers.get("x-wp-total") || "0";
-      const totalPages = res.headers.get("x-wp-totalpages") || "0";
+      const total = Array.isArray(body) ? String(body.length) : res.headers.get("x-wp-total") || "0";
+      const totalPages = Array.isArray(body) ? String(Math.max(1, Math.ceil(body.length / perPageNum))) : res.headers.get("x-wp-totalpages") || "0";
       headers.set("x-wp-total", total);
       headers.set("x-wp-totalpages", totalPages);
       headers.set("cache-control", "no-store");
@@ -192,10 +224,11 @@ export async function GET(req: NextRequest) {
       } else {
         res = await wcFetchRaw("products", params);
       }
-      const body = await res.json();
+      let body = await res.json();
+      if (wantSaleOnly && Array.isArray(body)) body = body.filter(isSaleProduct);
       const headers = new Headers();
-      const total = res.headers.get("x-wp-total") || "0";
-      const totalPages = res.headers.get("x-wp-totalpages") || "0";
+      const total = Array.isArray(body) ? String(body.length) : res.headers.get("x-wp-total") || "0";
+      const totalPages = Array.isArray(body) ? String(Math.max(1, Math.ceil(body.length / perPageNum))) : res.headers.get("x-wp-totalpages") || "0";
       headers.set("x-wp-total", total);
       headers.set("x-wp-totalpages", totalPages);
       headers.set("cache-control", "no-store");

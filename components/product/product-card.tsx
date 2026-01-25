@@ -35,7 +35,7 @@ export function ProductCard({ product }: { product: WCProduct }) {
               <Badge variant="secondary">Out of stock</Badge>
             </div>
           ) : null}
-          {!outOfStock && product.on_sale ? (
+          {!outOfStock && isSale ? (
             <div className="absolute left-2 top-2 z-20">
               <Badge variant="sale">Sale</Badge>
             </div>
