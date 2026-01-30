@@ -35,7 +35,7 @@ export function SignupBanner() {
 
   return (
     <section className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen max-w-[100vw] bg-primary text-black">
-      <div className="container py-8 md:py-10">
+      <div className="container px-4 md:px-8 py-8 md:py-10">
         <div className="grid gap-6 md:grid-cols-3 md:items-center">
           <div className="md:col-span-2">
             <h2 className="text-2xl md:text-3xl font-semibold">Exclusive deals & drop announcements</h2>

@@ -90,9 +90,9 @@ function productMatchesCollection(p: any, collectionTitle: string) {
   return false;
 }
 
-export async function GET(req: Request, context: any) {
+export async function GET(req: Request, context: { params: Promise<{ slug: string }> }) {
   try {
-    const slug = context?.params?.slug as string | undefined;
+    const { slug } = await context.params;
     if (!slug) return NextResponse.json({ error: "Missing slug" }, { status: 400 });
 
     const { searchParams } = new URL(req.url);

@@ -195,6 +195,66 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    // Special handling for on_sale filter: fetch multiple pages, filter for real discounts, then paginate
+    if (wantSaleOnly) {
+      const pageNum = Math.max(1, Number(page || "1"));
+      const allSaleProducts: WCProduct[] = [];
+      const maxPages = 10; // Limit to avoid too many requests
+
+      for (let p = 1; p <= maxPages; p++) {
+        const saleParams = { ...params, page: String(p), per_page: "100" };
+        let batch: WCProduct[] = [];
+
+        if (useBasic) {
+          const qs = new URLSearchParams(saleParams as Record<string, string>);
+          for (const f of attrFilters) {
+            const tax = f.slug.startsWith("pa_") ? f.slug : `pa_${f.slug}`;
+            qs.append("attribute", tax);
+            qs.append("attribute_term", f.terms);
+          }
+          const path = `/wp-json/wc/v3/products?${qs.toString()}`;
+          const res = await wooFetchRaw(path);
+          batch = await res.json();
+        } else {
+          if (attrFilters.length) {
+            const first = attrFilters[0];
+            const tax = first.slug.startsWith("pa_") ? first.slug : `pa_${first.slug}`;
+            batch = await wcFetch<WCProduct[]>("products", { ...saleParams, attribute: tax, attribute_term: first.terms } as any);
+          } else {
+            batch = await wcFetch<WCProduct[]>("products", saleParams);
+          }
+        }
+
+        if (!Array.isArray(batch) || batch.length === 0) break;
+
+        // Filter for products with actual discounts
+        const realSale = batch.filter(isSaleProduct);
+        allSaleProducts.push(...realSale);
+
+        // Stop if we got less than requested (last page)
+        if (batch.length < 100) break;
+      }
+
+      // Deduplicate by id
+      const seen = new Set<number>();
+      const deduped = allSaleProducts.filter((p) => {
+        if (seen.has(p.id)) return false;
+        seen.add(p.id);
+        return true;
+      });
+
+      const total = deduped.length;
+      const totalPages = Math.max(1, Math.ceil(total / perPageNum));
+      const start = (pageNum - 1) * perPageNum;
+      const out = deduped.slice(start, start + perPageNum);
+
+      const headers = new Headers();
+      headers.set("x-wp-total", String(total));
+      headers.set("x-wp-totalpages", String(totalPages));
+      headers.set("cache-control", "no-store");
+      return new NextResponse(JSON.stringify(out), { status: 200, headers });
+    }
+
     // Default path: fetch via raw to forward pagination headers
     if (useBasic) {
       const qs = new URLSearchParams(params as Record<string, string>);
@@ -205,13 +265,10 @@ export async function GET(req: NextRequest) {
       }
       const path = `/wp-json/wc/v3/products?${qs.toString()}`;
       const res = await wooFetchRaw(path);
-      let body = await res.json();
-      if (wantSaleOnly && Array.isArray(body)) body = body.filter(isSaleProduct);
+      const body = await res.json();
       const headers = new Headers();
-      const total = Array.isArray(body) ? String(body.length) : res.headers.get("x-wp-total") || "0";
-      const totalPages = Array.isArray(body) ? String(Math.max(1, Math.ceil(body.length / perPageNum))) : res.headers.get("x-wp-totalpages") || "0";
-      headers.set("x-wp-total", total);
-      headers.set("x-wp-totalpages", totalPages);
+      headers.set("x-wp-total", res.headers.get("x-wp-total") || "0");
+      headers.set("x-wp-totalpages", res.headers.get("x-wp-totalpages") || "0");
       headers.set("cache-control", "no-store");
       return new NextResponse(JSON.stringify(body), { status: 200, headers });
     } else {
@@ -224,13 +281,10 @@ export async function GET(req: NextRequest) {
       } else {
         res = await wcFetchRaw("products", params);
       }
-      let body = await res.json();
-      if (wantSaleOnly && Array.isArray(body)) body = body.filter(isSaleProduct);
+      const body = await res.json();
       const headers = new Headers();
-      const total = Array.isArray(body) ? String(body.length) : res.headers.get("x-wp-total") || "0";
-      const totalPages = Array.isArray(body) ? String(Math.max(1, Math.ceil(body.length / perPageNum))) : res.headers.get("x-wp-totalpages") || "0";
-      headers.set("x-wp-total", total);
-      headers.set("x-wp-totalpages", totalPages);
+      headers.set("x-wp-total", res.headers.get("x-wp-total") || "0");
+      headers.set("x-wp-totalpages", res.headers.get("x-wp-totalpages") || "0");
       headers.set("cache-control", "no-store");
       return new NextResponse(JSON.stringify(body), { status: 200, headers });
     }

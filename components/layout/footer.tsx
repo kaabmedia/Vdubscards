@@ -9,7 +9,7 @@ export function Footer() {
 
   return (
     <footer className="mt-0 bg-primary/20 text-foreground">
-      <div className="container py-12">
+      <div className="container px-4 md:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 text-sm">
           {/* Brand */}
           <div className="md:col-span-4">
@@ -70,7 +70,7 @@ export function Footer() {
         </div>
       </div>
       <div>
-        <div className="container py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
+        <div className="container px-4 md:px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
           <div>© {new Date().getFullYear()} V-dubscards. All rights reserved.</div>
           <PaymentBadges initial={(process.env.NEXT_PUBLIC_PAYMENT_METHODS || "card,ideal,bancontact,paypal,apple_pay").split(",").map((s) => s.trim()) as any} />
         </div>

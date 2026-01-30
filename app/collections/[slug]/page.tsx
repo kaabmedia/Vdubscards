@@ -141,19 +141,22 @@ export async function generateStaticParams() {
 export const dynamicParams = true;
 export const revalidate = 300;
 
-export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const col = await getCollection(params?.slug as string);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const col = await getCollection(slug);
   if (!col) return { title: "Collectie" };
   return { title: `${col.title} — Collectie` };
 }
 
-export default async function CollectionPage({ params, searchParams }: any) {
-  const col = await getCollection(params?.slug as string);
+export default async function CollectionPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<Record<string, string | undefined>> }) {
+  const { slug } = await params;
+  const searchParamsResolved = await searchParams;
+  const col = await getCollection(slug);
   if (!col) return notFound();
 
-  const page = Math.max(1, Number((searchParams && searchParams.page) || "1"));
+  const page = Math.max(1, Number((searchParamsResolved && searchParamsResolved.page) || "1"));
   const [{ items: products, totalPages }, attrCatalog] = await Promise.all([
-    getProductsForCollection(col.slug, searchParams || {}),
+    getProductsForCollection(col.slug, searchParamsResolved || {}),
     getAttributeCatalog(),
   ]);
 
@@ -264,10 +267,10 @@ export default async function CollectionPage({ params, searchParams }: any) {
           )}
           <div className="mt-6 flex items-center justify-between">
             {(() => {
-              const spPrev = buildQS(searchParams);
+              const spPrev = buildQS(searchParamsResolved);
               const prevPage = Math.max(1, page - 1);
               spPrev.set("page", String(prevPage));
-              const spNext = buildQS(searchParams);
+              const spNext = buildQS(searchParamsResolved);
               const nextPage = page + 1;
               spNext.set("page", String(nextPage));
               const hasPrev = page > 1;

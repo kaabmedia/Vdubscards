@@ -51,39 +51,8 @@ async function getProducts(paramsAll: Record<string, string | null | undefined>)
       cache: "no-store",
     });
     if (!res.ok) return { items: [] as WCProduct[], totalPages: 1 };
-    const totalPagesHeader = Number(res.headers.get("x-wp-totalpages") || res.headers.get("x-total-pages") || "0") || 1;
-    let items = (await res.json()) as WCProduct[];
-
-    // Client-side safety net: ensure on_sale filter only shows discounted items
-    const wantSaleOnly = (() => {
-      const v = paramsAll?.on_sale;
-      if (v == null) return false;
-      const s = String(v).toLowerCase();
-      return s === "1" || s === "true" || s === "yes";
-    })();
-    const isSaleProduct = (p: WCProduct) => {
-      if (!p) return false;
-      // Get price values - handle both REST API and Store API formats
-      const price = Number((p as any).price ?? (p as any).prices?.price);
-      const sale = Number((p as any).sale_price ?? (p as any).prices?.sale_price);
-      const regular = Number(
-        (p as any).regular_price ??
-        (p as any).prices?.regular_price ??
-        (p as any).prices?.regular_price_min ??
-        (p as any).prices?.regular_price_max
-      );
-      // Require an actual price difference, not just the on_sale flag
-      if (Number.isFinite(sale) && sale > 0 && Number.isFinite(regular) && regular > 0 && sale < regular) return true;
-      if (Number.isFinite(price) && price > 0 && Number.isFinite(regular) && regular > 0 && price < regular) return true;
-      return false;
-    };
-    if (wantSaleOnly) {
-      items = items.filter(isSaleProduct);
-    }
-
-    const totalPages = wantSaleOnly
-      ? Math.max(1, Math.ceil(items.length / perPage))
-      : totalPagesHeader;
+    const totalPages = Number(res.headers.get("x-wp-totalpages") || res.headers.get("x-total-pages") || "0") || 1;
+    const items = (await res.json()) as WCProduct[];
 
     return { items, totalPages };
   } catch {
@@ -102,12 +71,13 @@ async function getFilters() {
   }
 }
 
-export default async function ProductsPage({ searchParams }: any) {
-  const page = Math.max(1, Number((searchParams && searchParams.page) || "1"));
-  const { items: products, totalPages } = await getProducts(searchParams || {});
+export default async function ProductsPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
+  const searchParamsResolved = await searchParams;
+  const page = Math.max(1, Number((searchParamsResolved && searchParamsResolved.page) || "1"));
+  const { items: products, totalPages } = await getProducts(searchParamsResolved || {});
   const { price, attributes } = await getFilters();
-  const search = (searchParams && searchParams.search) || null;
-  const category = (searchParams && searchParams.category) || null;
+  const search = (searchParamsResolved && searchParamsResolved.search) || null;
+  const category = (searchParamsResolved && searchParamsResolved.category) || null;
 
   return (
     <div className="space-y-6 pb-16">
@@ -138,10 +108,10 @@ export default async function ProductsPage({ searchParams }: any) {
           )}
           <div className="mt-6 flex items-center justify-between">
             {(() => {
-              const spPrev = buildQS(searchParams);
+              const spPrev = buildQS(searchParamsResolved);
               const prevPage = Math.max(1, page - 1);
               spPrev.set("page", String(prevPage));
-              const spNext = buildQS(searchParams);
+              const spNext = buildQS(searchParamsResolved);
               const nextPage = page + 1;
               spNext.set("page", String(nextPage));
               const hasPrev = page > 1;

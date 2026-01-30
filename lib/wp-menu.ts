@@ -84,6 +84,8 @@ function toInternalPath(path: string): string {
     if (!path.startsWith("/")) path = "/" + path;
   }
   if (path.length > 1 && path.endsWith("/")) path = path.slice(0, -1);
+  // Temporary rewrite: WP menu uses /about-us, our route is /about
+  if (path === "/about-us") path = "/about";
   return path;
 }
 
@@ -102,4 +104,3 @@ export async function getPrimaryMenu(): Promise<NavItem[]> {
   const nodes = data?.menuItems?.nodes || [];
   return nodes.map(mapNode).filter((n) => n.label && n.path);
 }
-

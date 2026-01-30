@@ -314,7 +314,7 @@ export default async function HomePage() {
 
           {/* Content (always on top of cards) */}
           <div className="relative z-10 h-full">
-            <div className="container h-full flex items-start md:items-center justify-center px-4 pt-0 md:pt-6">
+            <div className="container h-full flex items-center justify-center px-4 pt-0 md:pt-6">
               <div className="max-w-3xl text-center mx-auto bg-background/80 backdrop-blur-sm rounded-xl px-4 py-6 md:px-8 md:py-8 md:-mt-[150px]">
                 <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
                   One of Europe's Largest Single-Card Marketplaces

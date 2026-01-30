@@ -41,9 +41,9 @@ function stripPa(slug: string) {
   return String(slug || "").replace(/^pa_/, "").toLowerCase();
 }
 
-export async function GET(_req: Request, context: any) {
+export async function GET(_req: Request, context: { params: Promise<{ slug: string }> }) {
   try {
-    const slug = context?.params?.slug as string | undefined;
+    const { slug } = await context.params;
     if (!slug) return NextResponse.json({ error: "Missing slug" }, { status: 400 });
 
     // 1) Resolve collection title via GraphQL

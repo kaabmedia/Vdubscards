@@ -23,8 +23,9 @@ async function getProduct(slug: string): Promise<WCProduct | null> {
   }
 }
 
-export default async function ProductDetail({ params }: any) {
-  const product = await getProduct(params.slug);
+export default async function ProductDetail({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const product = await getProduct(slug);
   if (!product) return notFound();
 
   const regular = Number(product.regular_price || product.price || 0);
